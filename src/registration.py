@@ -89,6 +89,8 @@ class User():
         return self.sex
     def get_bortrh(self):
         return self.borth
+    def __str__(self) -> str:
+        return self.name + " " + self.sex + " " + str(self.borth)  
     
 def create_user(name : str, sex: str, borth : str) -> User:
     return User(name, sex, borth)
@@ -98,9 +100,9 @@ class Registration(wx.Frame):
         # begin wxGlade: Registration.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((991, 769))
+        self.SetSize((400, 550 ))
         self.SetTitle("Регистрация")
-        self.SetBackgroundColour(wx.Colour(175, 30, 40))
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
         self.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "MS Reference Sans Serif"))
 
         grid_sizer_1 = wx.FlexGridSizer(6, 1, 2, 2)
@@ -109,7 +111,7 @@ class Registration(wx.Frame):
         grid_sizer_1.Add(sizer_4, 1, wx.ALIGN_CENTER, 0)
 
         label_3 = wx.StaticText(self, wx.ID_ANY, u"Фамилия")
-        label_3.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        label_3.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
         sizer_4.Add(label_3, 0, 0, 0)
         
         self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, u"", style=wx.TE_PROCESS_ENTER)
@@ -120,7 +122,7 @@ class Registration(wx.Frame):
         sizer_4.Add(self.text_ctrl_1, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
 
         label_4 = wx.StaticText(self, wx.ID_ANY, u"Имя")
-        label_4.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        label_4.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
         sizer_4.Add(label_4, 0, 0, 0)
 
         self.text_ctrl_2 = wx.TextCtrl(self, wx.ID_ANY, u"", style=wx.TE_PROCESS_ENTER)
@@ -131,7 +133,7 @@ class Registration(wx.Frame):
         sizer_4.Add(self.text_ctrl_2, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
 
         label_5 = wx.StaticText(self, wx.ID_ANY, u"Отчество")
-        label_5.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        label_5.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
         sizer_4.Add(label_5, 0, 0, 0)
         
         
@@ -141,26 +143,25 @@ class Registration(wx.Frame):
         self.text_ctrl_3.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.text_ctrl_3.SetFont(wx.Font(16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         sizer_4.Add(self.text_ctrl_3, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
-
+        
+        
+        label_1 = wx.StaticText(self, wx.ID_ANY, u"Пол")
+        label_1.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
+        label_1.SetFont(wx.Font(14, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "MS Reference Sans Serif"))
+        grid_sizer_1.Add(label_1, 0, wx.ALIGN_CENTER, 0)
 
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
         grid_sizer_1.Add(sizer_1, 1, wx.ALIGN_CENTER | wx.ALL, 10)
 
-        label_1 = wx.StaticText(self, wx.ID_ANY, u"Введите пол")
-        label_1.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
-        label_1.SetFont(wx.Font(14, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "MS Reference Sans Serif"))
-        sizer_1.Add(label_1, 0, wx.ALIGN_CENTER, 0)
-
-        sizer_1.Add((20, 20), 0, 0, 0)
-
-        self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=[u"Мужской", u"Женский"])
-        sizer_1.Add(self.choice_1, 0, wx.ALIGN_CENTER | wx.ALL, 10)
+        self.radio_box_1 = wx.RadioBox(self, wx.ID_ANY, "", choices=[u"Мужской", u"Женский"], majorDimension=1, style=wx.RA_SPECIFY_ROWS)
+        self.radio_box_1.SetSelection(0)
+        sizer_1.Add(self.radio_box_1, 0, 0, 0)
 
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
         grid_sizer_1.Add(sizer_2, 1, wx.ALIGN_CENTER | wx.ALL, 10)
 
-        label_2 = wx.StaticText(self, wx.ID_ANY, u"Введите дату рождения", style=wx.ALIGN_CENTER_HORIZONTAL)
-        label_2.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        label_2 = wx.StaticText(self, wx.ID_ANY, u"Дата рождения", style=wx.ALIGN_CENTER_HORIZONTAL)
+        label_2.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
         label_2.SetFont(wx.Font(14, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "MS Reference Sans Serif"))
         sizer_2.Add(label_2, 0, 0, 0)
 
@@ -189,9 +190,6 @@ class Registration(wx.Frame):
         if (len(name) == 2):
             wx.MessageBox("Есть пустое поле в ФИО", "Ошибка", wx.ICON_ERROR)
             return
-        if self.choice_1.GetCurrentSelection() == -1:
-            wx.MessageBox("Выберите пол!", "Ошибка", wx.ICON_ERROR)
-            return
         if ( (datetime.date.today().year -  self.generic_calendar_ctrl_1.GetDate().year - (
             datetime.date.today().month < self.generic_calendar_ctrl_1.GetDate().month+1 or (
                 datetime.date.today().month == self.generic_calendar_ctrl_1.GetDate().month+1 and 
@@ -201,15 +199,16 @@ class Registration(wx.Frame):
             wx.MessageBox("Соревнования доступны от 8 лет", "Ошибка", wx.ICON_ERROR)
             return
 
-        sex = self.choice_1.GetString(self.choice_1.GetCurrentSelection())
-
+        sex = "Мужской" if self.radio_box_1.GetSelection() == 0 else "Женский"
+    
         birth_date = self.generic_calendar_ctrl_1.GetDate()
         birth_str = birth_date.FormatISODate()  # Преобразуем в строку YYYY-MM-DD
 
         user = create_user(name, sex, birth_str)
 
         if user:
-            wx.MessageBox(f"Пользователь создан: {user.get_name()}", "Успех", wx.ICON_INFORMATION)
+            wx.MessageBox(f"Пользователь создан: {user}", "Успех", wx.ICON_INFORMATION)
+            self.Close()
         else:
             wx.MessageBox("Ошибка ввода данных", "Ошибка", wx.ICON_ERROR)
 # end of class Registration
