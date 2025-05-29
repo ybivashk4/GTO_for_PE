@@ -1,6 +1,6 @@
 from sqlite3 import *
 from datetime import datetime
-def register(Name, Surname, Patronymic, Sex, BirthDate):
+def register(Surname, Name, Patronymic, Sex, BirthDate):
     con = connect('../GTO.db')
     cur = con.cursor()
     year, month, day = map(int, BirthDate.split("-"))
