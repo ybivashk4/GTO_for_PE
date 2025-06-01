@@ -11,6 +11,7 @@ import wx.adv
 # end wxGlade
 import datetime
 import re
+import registerParticipant as reg_api
 # begin wxGlade: extracode
 # end wxGlade
 
@@ -78,22 +79,28 @@ class DateSelector(wx.Panel):
         return self.date_picker.GetValue()
 
 class User():
-    def __init__(self, name : str, sex: str, borth : datetime) -> None:
+    def __init__(self, name : str, surname : str, thirdname : str, sex: str, borth : datetime) -> None:
         self.name = name
+        self.surname = surname
+        self.thirdname = thirdname
         self.sex = sex
         self.borth = borth
         pass
     def get_name(self):
         return self.name
+    def get_surname(self):
+        return self.surname
+    def get_third_name(self):
+        return self.thirdname
     def get_sex(self):
         return self.sex
     def get_bortrh(self):
         return self.borth
     def __str__(self) -> str:
-        return self.name + " " + self.sex + " " + str(self.borth)  
+        return self.name + " " + self.sex + " " + str(self.borth)
     
-def create_user(name : str, sex: str, borth : str) -> User:
-    return User(name, sex, borth)
+def create_user(name : str, surname : str, thirdname : str, sex: str, borth : str) -> User:
+    return User(name,surname,thirdname, sex, borth)
 
 class Registration(wx.Frame):
     def __init__(self, *args, **kwds):
@@ -186,7 +193,9 @@ class Registration(wx.Frame):
         # end wxGlade
     def on_confirm(self, event):
         # Оставляем от имени только буквы, создаём шаблон для записи, где первая буква - заглавная, остальные маленькие
-        name = self.text_ctrl_1.GetValue().strip().capitalize() + " " + self.text_ctrl_2.GetValue().strip().capitalize() + " " + self.text_ctrl_3.GetValue().strip().capitalize()
+        name = self.text_ctrl_1.GetValue().strip().capitalize()
+        surname = self.text_ctrl_2.GetValue().strip().capitalize()
+        thirdname = self.text_ctrl_3.GetValue().strip().capitalize()
         if (len(name) == 2):
             wx.MessageBox("Есть пустое поле в ФИО", "Ошибка", wx.ICON_ERROR)
             return
@@ -204,9 +213,10 @@ class Registration(wx.Frame):
         birth_date = self.generic_calendar_ctrl_1.GetDate()
         birth_str = birth_date.FormatISODate()  # Преобразуем в строку YYYY-MM-DD
 
-        user = create_user(name, sex, birth_str)
+        user = create_user(name, surname, thirdname, sex, birth_str)
 
         if user:
+            reg_api.register(user.get_surname(), user.get_name(), user.get_third_name(), user.get_sex(), user.get_bortrh())
             wx.MessageBox(f"Пользователь создан: {user}", "Успех", wx.ICON_INFORMATION)
             self.Close()
         else:
