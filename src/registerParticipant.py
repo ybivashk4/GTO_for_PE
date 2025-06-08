@@ -1,6 +1,6 @@
 from sqlite3 import *
 from datetime import datetime
-def register(Surname, Name, Patronymic, Sex, BirthDate):
+def register(Surname, Name, Patronymic, Sex, BirthDate, ParticipantNumber, Team):
     con = connect('../GTO.db')
     cur = con.cursor()
     year, month, day = map(int, BirthDate.split("-"))
@@ -26,7 +26,7 @@ def register(Surname, Name, Patronymic, Sex, BirthDate):
         grade = 10
     elif 35 <= age <= 39:
         grade = 11
-    elif 40 < age < 44:
+    elif 40 <= age <= 44:
         grade = 12
     elif 45 <= age <= 49:
         grade = 13
@@ -34,13 +34,13 @@ def register(Surname, Name, Patronymic, Sex, BirthDate):
         grade = 14
     elif 55 <= age <= 59:
         grade = 15
-    elif 50 <= age <= 64:
+    elif 60 <= age <= 64:
         grade = 16
     elif 65 <= age <= 69:
         grade = 17
     elif 70 <= age:
         grade = 18
-    command = "INSERT INTO Participants VALUES ((SELECT (MAX(Id)+1) from Participants),'" + Surname + "', '" + Name + "', '" + Patronymic + "', '" + Sex + "', '" + BirthDate + "', " + str(grade)+")"
+    command = "INSERT INTO Participants VALUES ((SELECT (MAX(Id)+1) from Participants),'" + Surname + "', '" + Name + "', '" + Patronymic + "', '" + Sex + "', '" + BirthDate + "', " + str(ParticipantNumber) + ", '" + Team + "', " + str(grade)+")"
     print(command)
     cur.execute(command)
     con.commit()
