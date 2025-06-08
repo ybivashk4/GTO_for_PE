@@ -2,12 +2,14 @@ import wx
 
 
 class Out_object():
-    def __init__(self, name, surname, thirdname, normatives : list, sum) -> None:
+    def __init__(self, name, surname, thirdname, number, team, normatives : list, sum) -> None:
         self.name = name
         self.surname = surname
         self.thirdname = thirdname
         self.normatives = normatives
         self.sum = sum
+        self.number = number
+        self.team = team
             
     def get_normatives(self) -> list:
         return self.normatives
@@ -19,6 +21,10 @@ class Out_object():
         return self.thirdname
     def get_sum(self):
         return self.sum
+    def get_number(self):
+        return self.number
+    def get_team(self):
+        return self.team
     # def calculate_sum(self):
     #     self.sum = 0
     #     for i in range(2, int(len(self.normatives)), 3):
@@ -32,13 +38,13 @@ def get_column_length(out_object : Out_object) -> int:
     return int(len(out_object.get_normatives()) / 3 * 2 + 0.1) + 3 + sum_len + name_len
 
 
-class MyFrame(wx.Frame ):
+class Viewer(wx.Frame ):
     def __init__(self, *args, **kwds):
-        # begin wxGlade: MyFrame.__init__
+        # begin wxGlade: Viewer.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((600, 800))
-        self.SetTitle("frame")
+        self.SetTitle("Просмоторщик")
         
         self.panel_1 = wx.Panel(self, wx.ID_ANY)
 
@@ -47,7 +53,7 @@ class MyFrame(wx.Frame ):
         grid_sizer_1 = wx.FlexGridSizer(5, 1, 0, 0)
         sizer_1.Add(grid_sizer_1, 1, wx.EXPAND, 0)
 
-        self.choice_1 = wx.Choice(self.panel_1, wx.ID_ANY, choices=[u"1 категория", u"2 категория", u"3 категория", u"4 категория", u"5 категория", u"6 категория", u"7 категория", u"8 категория", u"9 категория", u"10 категория", u"11 категория", u"12 категория", u"13 категория", u"14 категория", u"15 категория", u"16 категория", u"17 категория", u"18 категория"])
+        self.choice_1 = wx.Choice(self.panel_1, wx.ID_ANY, choices=[u"2 категория", u"3 категория", u"4 категория", u"5 категория", u"6 категория", u"7 категория", u"8 категория", u"9 категория", u"10 категория", u"11 категория", u"12 категория", u"13 категория", u"14 категория", u"15 категория", u"16 категория", u"17 категория", u"18 категория"])
         self.choice_1.SetSelection(0)
         grid_sizer_1.Add(self.choice_1, 0, 0, 0)
 
@@ -80,6 +86,8 @@ class MyFrame(wx.Frame ):
         self.list_ctrl_1.AppendColumn("Фамилия", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Имя", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Отчество", format=wx.LIST_FORMAT_LEFT, width=200)
+        self.list_ctrl_1.AppendColumn("Номер", format=wx.LIST_FORMAT_LEFT, width=200)
+        self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
         for j in range(0, len(out_objects[0].get_normatives()), 3):
             self.list_ctrl_1.AppendColumn(out_objects[0].get_normatives()[j] + " Результат", format=wx.LIST_FORMAT_LEFT, width=200)
             self.list_ctrl_1.AppendColumn(out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
@@ -90,6 +98,8 @@ class MyFrame(wx.Frame ):
             out.append(out_objects[i].get_name())
             out.append(out_objects[i].get_surname())
             out.append(out_objects[i].get_thirdname())
+            out.append(out_objects[i].get_number())
+            out.append(out_objects[i].get_team())
             for j in range(0, len(out_objects[i].get_normatives())):
                 if (j == 0 or j % 3 == 0):
                     continue
@@ -130,7 +140,6 @@ class MyFrame(wx.Frame ):
                 
     def get_data(self, event):
         # удаление данных прошлого запроса
-        out_objects = []
         self.list_ctrl_1.DeleteAllItems()
         self.list_ctrl_1.DeleteAllColumns()
         
@@ -139,24 +148,21 @@ class MyFrame(wx.Frame ):
         sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())
         
         # Пример формата получаемых данных
-        out_objects.append(Out_object("Mikhail", "Beltyukov", "Olegovich", ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4], 0))
-        out_objects.append(Out_object("Mikhail2", "Beltyukov2", "Olegovich2", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 0))
-        
+        out_objects.append(Out_object("Mikhail", "Beltyukov", "Olegovich", "1", "Сургут", ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4], 0))
+        out_objects.append(Out_object("Mikhail2", "Beltyukov2", "Olegovich2", "2", "НеСургут", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 0))
         # Строительство новых данных
         self.builder()
-# end of class MyFrame
+# end of class Viewer
 
 class MyApp(wx.App):
     def OnInit(self):
-        self.frame = MyFrame(None, wx.ID_ANY, "")
+        self.frame = Viewer(None, wx.ID_ANY, "")
         self.SetTopWindow(self.frame)
         self.frame.Show()
         return True
 
 if __name__ == "__main__":
     out_objects = []
-    out_objects.append(Out_object("Mikhail", "Beltyukov", "Olegovich", ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4], 0))
-    out_objects.append(Out_object("Mikhail2", "Beltyukov2", "Olegovich2", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 0))
     app = MyApp(0)
     app.MainLoop()
  

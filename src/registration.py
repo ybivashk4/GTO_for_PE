@@ -15,7 +15,7 @@ import registerParticipant as reg_api
 # begin wxGlade: extracode
 # end wxGlade
 
-class DateSelector(wx.Panel):
+class Date_selector(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -34,7 +34,7 @@ class DateSelector(wx.Panel):
     def GetDate(self):
         return self.date_picker.GetValue()
 
-class DateSelector(wx.Panel):
+class Date_selector(wx.Panel):
     def __init__(self, parent):
         super().__init__(parent)
 
@@ -79,12 +79,14 @@ class DateSelector(wx.Panel):
         return self.date_picker.GetValue()
 
 class User():
-    def __init__(self, name : str, surname : str, thirdname : str, sex: str, borth : datetime) -> None:
+    def __init__(self, name : str, surname : str, thirdname : str, sex: str, borth : datetime, number : str, team : str) -> None:
         self.name = name
         self.surname = surname
         self.thirdname = thirdname
         self.sex = sex
         self.borth = borth
+        self.number = number
+        self.team = team
         pass
     def get_name(self):
         return self.name
@@ -96,35 +98,38 @@ class User():
         return self.sex
     def get_bortrh(self):
         return self.borth
+    def get_num(self):
+        return self.number
+    def get_team(self):
+        return self.team
     def __str__(self) -> str:
         return self.name + " " + self.sex + " " + str(self.borth)
     
-def create_user(name : str, surname : str, thirdname : str, sex: str, borth : str) -> User:
-    return User(name,surname,thirdname, sex, borth)
+def create_user(name : str, surname : str, thirdname : str, sex: str, borth : str, number : str, team : str) -> User:
+    return User(name,surname,thirdname, sex, borth, number, team)
 
 class Registration(wx.Frame):
     def __init__(self, *args, **kwds):
         # begin wxGlade: Registration.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((400, 550 ))
+        self.SetSize((400, 700 ))
         self.SetTitle("Регистрация")
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
         self.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "MS Reference Sans Serif"))
 
         grid_sizer_1 = wx.FlexGridSizer(6, 1, 2, 2)
 
-        sizer_4 = wx.FlexGridSizer(6, 1, 0, 0)
+        sizer_4 = wx.FlexGridSizer(10, 1, 0, 0)
         grid_sizer_1.Add(sizer_4, 1, wx.ALIGN_CENTER, 0)
 
         label_3 = wx.StaticText(self, wx.ID_ANY, u"Фамилия")
         label_3.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
+
         sizer_4.Add(label_3, 0, 0, 0)
         
         self.text_ctrl_1 = wx.TextCtrl(self, wx.ID_ANY, u"", style=wx.TE_PROCESS_ENTER)
         self.text_ctrl_1.SetMinSize((300, 35))
-        self.text_ctrl_1.SetBackgroundColour(wx.Colour(204, 50, 50))
-        self.text_ctrl_1.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.text_ctrl_1.SetFont(wx.Font(16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         sizer_4.Add(self.text_ctrl_1, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
 
@@ -134,8 +139,6 @@ class Registration(wx.Frame):
 
         self.text_ctrl_2 = wx.TextCtrl(self, wx.ID_ANY, u"", style=wx.TE_PROCESS_ENTER)
         self.text_ctrl_2.SetMinSize((300, 35))
-        self.text_ctrl_2.SetBackgroundColour(wx.Colour(204, 50, 50))
-        self.text_ctrl_2.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.text_ctrl_2.SetFont(wx.Font(16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         sizer_4.Add(self.text_ctrl_2, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
 
@@ -143,13 +146,30 @@ class Registration(wx.Frame):
         label_5.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
         sizer_4.Add(label_5, 0, 0, 0)
         
-        
         self.text_ctrl_3 = wx.TextCtrl(self, wx.ID_ANY, u"", style=wx.TE_PROCESS_ENTER)
         self.text_ctrl_3.SetMinSize((300, 35))
-        self.text_ctrl_3.SetBackgroundColour(wx.Colour(204, 50, 50))
-        self.text_ctrl_3.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.text_ctrl_3.SetFont(wx.Font(16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
-        sizer_4.Add(self.text_ctrl_3, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
+        sizer_4.Add(self.text_ctrl_3, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)        
+        
+        
+        label_6 = wx.StaticText(self, wx.ID_ANY, u"Номер")
+        label_6.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
+        sizer_4.Add(label_6, 0, 0, 0)
+
+        self.text_ctrl_4 = wx.TextCtrl(self, wx.ID_ANY, u"", style=wx.TE_PROCESS_ENTER)
+        self.text_ctrl_4.SetMinSize((300, 35))
+        self.text_ctrl_4.SetFont(wx.Font(16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
+        sizer_4.Add(self.text_ctrl_4, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
+
+        label_7 = wx.StaticText(self, wx.ID_ANY, u"Команда")
+        label_7.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
+        sizer_4.Add(label_7, 0, 0, 0)
+        
+        
+        self.text_ctrl_5 = wx.TextCtrl(self, wx.ID_ANY, u"", style=wx.TE_PROCESS_ENTER)
+        self.text_ctrl_5.SetMinSize((300, 35))
+        self.text_ctrl_5.SetFont(wx.Font(16, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
+        sizer_4.Add(self.text_ctrl_5, 2, wx.ALIGN_CENTER_VERTICAL | wx.ALL, 10)
         
         
         label_1 = wx.StaticText(self, wx.ID_ANY, u"Пол")
@@ -172,7 +192,7 @@ class Registration(wx.Frame):
         label_2.SetFont(wx.Font(14, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "MS Reference Sans Serif"))
         sizer_2.Add(label_2, 0, 0, 0)
 
-        self.generic_calendar_ctrl_1 = DateSelector(self)
+        self.generic_calendar_ctrl_1 = Date_selector(self)
         self.generic_calendar_ctrl_1.SetFont(wx.Font(9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "MS Reference Sans Serif"))
         self.generic_calendar_ctrl_1.SetMinSize(wx.Size(200, 30))
         grid_sizer_1.Add(self.generic_calendar_ctrl_1, 2, wx.ALIGN_CENTER | wx.ALL, 10)
@@ -212,8 +232,9 @@ class Registration(wx.Frame):
     
         birth_date = self.generic_calendar_ctrl_1.GetDate()
         birth_str = birth_date.FormatISODate()  # Преобразуем в строку YYYY-MM-DD
-
-        user = create_user(name, surname, thirdname, sex, birth_str)
+        number = self.text_ctrl_4.GetValue()
+        team = self.text_ctrl_5.GetValue()
+        user = create_user(name, surname, thirdname, sex, birth_str, number, team)
 
         if user:
             reg_api.register(user.get_surname(), user.get_name(), user.get_third_name(), user.get_sex(), user.get_bortrh())
