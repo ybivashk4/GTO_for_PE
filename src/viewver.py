@@ -1,8 +1,73 @@
 import wx
+import wx
+import tempfile
+import openpyxl
+import pyperclip
+from openpyxl.styles import Font, Alignment
 
 
+"""
+    TODO:
+    * Сделать цвет у строчки с категорией
+    * Сделать Вывод верхней части таблицы
+    * Сделать Вывод нескольких таблиц
+    * Сделать Вывод остальных листов
+"""
+
+
+
+def to_roman(number:  int) -> str:
+    roman_numbers = {'M': 1000, 'CM': 900, 'D': 500, 'CD': 400,
+                 'C': 100, 'XC': 90, 'L': 50, 'XL': 40,
+                 'X': 10, 'IX': 9, 'V': 5, 'IV': 4, 'I': 1}
+    roman = ''
+    for letter, value in roman_numbers.items():
+        while number >= value:
+            roman += letter
+            number -= value
+    return roman
+
+
+def category_to_age(category: int) -> str:
+    res = ''
+    match category:
+        case 2:
+            res = '8-9'
+        case 3:
+            res = '10-11'
+        case 4:
+            res ='12-13'
+        case 5:
+            res = '14-15'
+        case 6:
+            res = '16-17'
+        case 7:
+            res = '18-19'
+        case 8:
+            res = '20-24'
+        case 9:
+            res = '25-29'
+        case 10:
+            res = '30-34'
+        case 11:
+            res = '35-39'
+        case 12:
+            res = '40-44'
+        case 13:
+            res = '45-49'
+        case 14:
+            res = '50-54'
+        case 15:
+            res = '55-59'
+        case 16:
+            res = '59-64'
+        case 17:
+            res = '65-69'
+        case 18:                 
+            res = '70+'                      
+    return res
 class Out_object():
-    def __init__(self, name, surname, thirdname, number, team, normatives : list, sum) -> None:
+    def __init__(self, place,surname, name, thirdname,date_of_borth : str, number, team, normatives : list, sum) -> None:
         self.name = name
         self.surname = surname
         self.thirdname = thirdname
@@ -10,7 +75,8 @@ class Out_object():
         self.sum = sum
         self.number = number
         self.team = team
-            
+        self.place = place
+        self.date = date_of_borth
     def get_normatives(self) -> list:
         return self.normatives
     def get_name(self):
@@ -25,6 +91,10 @@ class Out_object():
         return self.number
     def get_team(self):
         return self.team
+    def get_place(self):
+        return self.place
+    def get_date(self):
+        return self.date
     # def calculate_sum(self):
     #     self.sum = 0
     #     for i in range(2, int(len(self.normatives)), 3):
@@ -83,21 +153,22 @@ class Viewer(wx.Frame ):
         self.Layout()
         # end wxGlade
     def builder(self):
-        self.list_ctrl_1.AppendColumn("Фамилия", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Имя", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Отчество", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Номер", format=wx.LIST_FORMAT_LEFT, width=200)
+        self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
+        self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
+        self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
+        self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
         for j in range(0, len(out_objects[0].get_normatives()), 3):
             self.list_ctrl_1.AppendColumn(out_objects[0].get_normatives()[j] + " Результат", format=wx.LIST_FORMAT_LEFT, width=200)
             self.list_ctrl_1.AppendColumn(out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
                 
-        self.list_ctrl_1.AppendColumn("Сумма", format=wx.LIST_FORMAT_LEFT, width=100)
+        self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
+        
         for i in range(len(out_objects)):
             out = []
-            out.append(out_objects[i].get_name())
-            out.append(out_objects[i].get_surname())
-            out.append(out_objects[i].get_thirdname())
+            out.append(str(out_objects[i].get_place()))
+            out.append(out_objects[i].get_surname() + " " + out_objects[i].get_name() + " " + out_objects[i].get_thirdname())
+            out.append(out_objects[i].get_date())
             out.append(out_objects[i].get_number())
             out.append(out_objects[i].get_team())
             for j in range(0, len(out_objects[i].get_normatives())):
@@ -105,51 +176,77 @@ class Viewer(wx.Frame ):
                     continue
                 out.append(str(out_objects[i].get_normatives()[j]))
             out.append(str(out_objects[i].get_sum()))
+            
             self.list_ctrl_1.Append(out)
             
             
     def copy_all_to_clipboard(self, event):
-        all_items = []
+        # Создаем временный Excel файл
+        wb = openpyxl.Workbook()
+        ws = wb.active
         
         # Получаем количество строк и колонок
         row_count = self.list_ctrl_1.GetItemCount()
         col_count = self.list_ctrl_1.GetColumnCount()
-        
+
         # Собираем заголовки колонок
-        headers = []
-        for col in range(col_count):
-            headers.append(self.list_ctrl_1.GetColumn(col).GetText())
-        all_items.append("\t".join(headers))
+        headers = [self.list_ctrl_1.GetColumn(col).GetText() for col in range(col_count)]
+        ws.append(headers)
+        ws.append([f'({to_roman(self.choice_1.GetSelection() + 2)} ступень)  {category_to_age(self.choice_1.GetSelection()+2)} лет {self.radio_box_1.GetStringSelection()}'])
+        ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=col_count)
         
+
         # Собираем данные
         for row in range(row_count):
-            row_data = []
-            for col in range(col_count):
-                row_data.append(self.list_ctrl_1.GetItemText(row, col))
-            all_items.append("\t".join(row_data))
+            row_data = [self.list_ctrl_1.GetItemText(row, col) for col in range(col_count)]
+            ws.append(row_data)
+
+        # Сохраняем файл во временной директории
+        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
+        wb.save(temp_file.name)
+
+        # Копируем данные в буфер обмена в текстовом формате
+        output = []
+        for row in ws.iter_rows(values_only=True):
+            output.append('\t'.join(map(str, row)))
         
-        # Копируем в буфер обмена
-        if all_items:
-            clipboard_data = wx.TextDataObject()
-            clipboard_data.SetText("\n".join(all_items))
-            
-            if wx.TheClipboard.Open():
-                wx.TheClipboard.SetData(clipboard_data)
-                wx.TheClipboard.Close()
-                
+        # читаемый шрифт
+        font_style = Font(name='Times New Roman', size=16, vertAlign='baseline')
+        alignment= Alignment(horizontal='center', vertical='center', wrap_text=True)
+        for row in ws.iter_rows():
+            for cell in row:
+                cell.font = font_style
+                cell.alignment = alignment
+        
+        
+        # Размеры ячеек
+        ws.row_dimensions[1].height = 70
+        for col in range(1, 1000):
+            col_letter = openpyxl.utils.get_column_letter(col)
+            ws.column_dimensions[col_letter].width = 20
+        ws.column_dimensions['B'].width = 60
+        ws.column_dimensions['E'].width = 70
+        
+        # Сохранение файла таблицы
+        pyperclip.copy('\n'.join(output))
+        wb.save('styled_document.xlsx')
+        # Закрываем временный файл
+        temp_file.close()
+
+        # Уведомляем пользователя
+        wx.MessageBox("Данные скопированы в буфер обмена!", "Успех", wx.OK | wx.ICON_INFORMATION)  
                 
     def get_data(self, event):
         # удаление данных прошлого запроса
         self.list_ctrl_1.DeleteAllItems()
         self.list_ctrl_1.DeleteAllColumns()
-        
         # Для запроса в базу
-        category = self.choice_1.GetSelection()+1
+        category = self.choice_1.GetSelection()+2
         sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())
-        
+        out_objects.clear()
         # Пример формата получаемых данных
-        out_objects.append(Out_object("Mikhail", "Beltyukov", "Olegovich", "1", "Сургут", ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4], 0))
-        out_objects.append(Out_object("Mikhail2", "Beltyukov2", "Olegovich2", "2", "НеСургут", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 0))
+        out_objects.append(Out_object(1, "Beltyukov","Mikhail", "Olegovich", "20.09.2004", "1", "Сургут", ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4], 20))
+        out_objects.append(Out_object(2, "Beltyukov2","Mikhail2",  "Olegovich2", "20.09.2000", "2", "НеСургут", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 10))
         # Строительство новых данных
         self.builder()
 # end of class Viewer
