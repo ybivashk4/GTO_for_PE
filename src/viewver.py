@@ -3,18 +3,23 @@ import wx
 import tempfile
 import openpyxl
 import pyperclip
-from openpyxl.styles import Font, Alignment
+from openpyxl.styles import Font, Alignment, PatternFill
 
 
 """
     TODO:
-    * Сделать цвет у строчки с категорией
-    * Сделать Вывод верхней части таблицы
+    * Сделать цвет у строчки с категорией+
+    * Сделать Вывод верхней части таблицы+
     * Сделать Вывод нескольких таблиц
     * Сделать Вывод остальных листов
 """
 
-
+"""
+    NOTE:
+    Для задачи с несколькими таблицами нужно сделать так, чтобы таблица представляла из себя единый объект 
+    и при кнопке подтвердить - заполнялся объект, добавлялся в массив, данные в отображении обновлялись
+    При сохранении файла эксель - сначала вывести шапку, потом объекты через цикл и функцию для вывода этого объекта через cur_row
+"""
 
 def to_roman(number:  int) -> str:
     roman_numbers = {'M': 1000, 'CM': 900, 'D': 500, 'CD': 400,
@@ -188,12 +193,34 @@ class Viewer(wx.Frame ):
         # Получаем количество строк и колонок
         row_count = self.list_ctrl_1.GetItemCount()
         col_count = self.list_ctrl_1.GetColumnCount()
-
+        cur_row = 1
         # Собираем заголовки колонок
         headers = [self.list_ctrl_1.GetColumn(col).GetText() for col in range(col_count)]
+        ws.append(["Фестиваль Всероссийского физкультурно-спортивного комплекса \"Готов к труду и обороне\""])
+        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+        cur_row += 1
+        ws.append(["Протокол соревнования"])
+        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+        cur_row += 1
+        ws.append([" Зачёт"])
+        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+        cur_row += 1
+        temp = ["Дата"]
+        for i in range(1, int(col_count/2)):
+            temp.append("")
+        temp.append("Город")
+        ws.append(temp)
+        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
+        ws.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)
+        
+
+        
+        cur_row += 1
         ws.append(headers)
+        cur_row += 1
+        
         ws.append([f'({to_roman(self.choice_1.GetSelection() + 2)} ступень)  {category_to_age(self.choice_1.GetSelection()+2)} лет {self.radio_box_1.GetStringSelection()}'])
-        ws.merge_cells(start_row=2, start_column=1, end_row=2, end_column=col_count)
+        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
         
 
         # Собираем данные
@@ -218,14 +245,29 @@ class Viewer(wx.Frame ):
                 cell.font = font_style
                 cell.alignment = alignment
         
+        # Верхняя часть
+        ws['A1'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
+        ws['A2'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
+        ws['A3'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
+        ws['A4'].font = Font(name='Times New Roman', size=28, vertAlign='baseline')
+        ws['G4'].font = Font(name='Times New Roman', size=28, vertAlign='baseline')
         
         # Размеры ячеек
         ws.row_dimensions[1].height = 70
+        ws.row_dimensions[2].height = 40
+        ws.row_dimensions[3].height = 40
+        ws.row_dimensions[4].height = 40
+        ws.row_dimensions[5].height = 70
         for col in range(1, 1000):
             col_letter = openpyxl.utils.get_column_letter(col)
             ws.column_dimensions[col_letter].width = 20
         ws.column_dimensions['B'].width = 60
         ws.column_dimensions['E'].width = 70
+        
+        
+        # Добавление цвета
+        fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
+        ws[f'A{cur_row}'].fill = fill
         
         # Сохранение файла таблицы
         pyperclip.copy('\n'.join(output))

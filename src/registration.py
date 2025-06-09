@@ -108,13 +108,11 @@ class User():
 def create_user(name : str, surname : str, thirdname : str, sex: str, borth : str, number : str, team : str) -> User:
     return User(name,surname,thirdname, sex, borth, number, team)
 
-class Registration(wx.Frame):
-    def __init__(self, *args, **kwds):
+class Registration(wx.Panel):
+    def __init__(self, parent):
+        super(Registration, self).__init__(parent) 
         # begin wxGlade: Registration.__init__
-        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
-        wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((400, 700 ))
-        self.SetTitle("Регистрация")
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
         self.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "MS Reference Sans Serif"))
 
@@ -237,7 +235,7 @@ class Registration(wx.Frame):
         user = create_user(name, surname, thirdname, sex, birth_str, number, team)
 
         if user:
-            reg_api.register(user.get_surname(), user.get_name(), user.get_third_name(), user.get_sex(), user.get_bortrh())
+            reg_api.register(user.get_surname(), user.get_name(), user.get_third_name(), user.get_sex(), user.get_bortrh(), user.get_num(), user.get_team())
             wx.MessageBox(f"Пользователь создан: {user}", "Успех", wx.ICON_INFORMATION)
             self.Close()
         else:
