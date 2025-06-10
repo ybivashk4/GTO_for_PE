@@ -10,15 +10,8 @@ from openpyxl.styles import Font, Alignment, PatternFill
     TODO:
     * Сделать цвет у строчки с категорией+
     * Сделать Вывод верхней части таблицы+
-    * Сделать Вывод нескольких таблиц
+    * Сделать Вывод нескольких таблиц+
     * Сделать Вывод остальных листов
-"""
-
-"""
-    NOTE:
-    Для задачи с несколькими таблицами нужно сделать так, чтобы таблица представляла из себя единый объект 
-    и при кнопке подтвердить - заполнялся объект, добавлялся в массив, данные в отображении обновлялись
-    При сохранении файла эксель - сначала вывести шапку, потом объекты через цикл и функцию для вывода этого объекта через cur_row
 """
 
 def to_roman(number:  int) -> str:
@@ -106,8 +99,28 @@ class Out_object():
     #     for i in range(2, int(len(self.normatives)), 3):
     #         self.sum += self.normatives[i]
     #     return self.sum
+    
+class Out_category():
+    def __init__(self, out_objects : list, category : int, sex: str) -> None:
+        self.out_objects = out_objects    
+        self.category = category
+        self.sex = sex        
         
-
+    def get_info(self):
+        return self.out_objects
+    
+    def get_sex(self):
+        return self.sex
+    
+    def get_category(self):
+        return self.category
+    
+    def get_normatives(self):
+        return self.out_objects[0].get_normatives()
+    
+    def get_normatives_without_results(self):
+        return [self.out_objects[0].get_normatives()[i] for i in range(0, len(self.out_objects[0].get_normatives()), 3)]
+    
 def get_column_length(out_object : Out_object) -> int:
     name_len = 3
     sum_len = 1
@@ -119,6 +132,7 @@ class Viewer(wx.Panel):
         
         # Объекты для вывода
         self.out_objects = []
+        self.out_categories = []
         
         # begin wxGlade: Viewer.__init__
         super(Viewer, self).__init__(parent) 
@@ -156,6 +170,7 @@ class Viewer(wx.Panel):
         self.Layout()
         # end wxGlade
     def builder(self):
+        
         self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
         self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
@@ -166,21 +181,21 @@ class Viewer(wx.Panel):
             self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
                 
         self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
-        
-        for i in range(len(self.out_objects)):
-            out = []
-            out.append(str(self.out_objects[i].get_place()))
-            out.append(self.out_objects[i].get_surname() + " " + self.out_objects[i].get_name() + " " + self.out_objects[i].get_thirdname())
-            out.append(self.out_objects[i].get_date())
-            out.append(self.out_objects[i].get_number())
-            out.append(self.out_objects[i].get_team())
-            for j in range(0, len(self.out_objects[i].get_normatives())):
-                if (j == 0 or j % 3 == 0):
-                    continue
-                out.append(str(self.out_objects[i].get_normatives()[j]))
-            out.append(str(self.out_objects[i].get_sum()))
-            
-            self.list_ctrl_1.Append(out)
+        for out_category in self.out_categories:
+            for i in range(len(out_category.get_info())):
+                out = []
+                out.append(str(out_category.get_info()[i].get_place()))
+                out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
+                out.append(out_category.get_info()[i].get_date())
+                out.append(out_category.get_info()[i].get_number())
+                out.append(out_category.get_info()[i].get_team())
+                for j in range(0, len(out_category.get_info()[i].get_normatives())):
+                    if (j == 0 or j % 3 == 0):
+                        continue
+                    out.append(str(out_category.get_info()[i].get_normatives()[j]))
+                out.append(str(out_category.get_info()[i].get_sum()))
+                
+                self.list_ctrl_1.Append(out)
             
             
     def copy_all_to_clipboard(self, event):
@@ -189,11 +204,10 @@ class Viewer(wx.Panel):
         ws = wb.active
         
         # Получаем количество строк и колонок
-        row_count = self.list_ctrl_1.GetItemCount()
         col_count = self.list_ctrl_1.GetColumnCount()
         cur_row = 1
-        # Собираем заголовки колонок
-        headers = [self.list_ctrl_1.GetColumn(col).GetText() for col in range(col_count)]
+        
+        # Вывод верхней шапки
         ws.append(["Фестиваль Всероссийского физкультурно-спортивного комплекса \"Готов к труду и обороне\""])
         ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
         cur_row += 1
@@ -210,30 +224,54 @@ class Viewer(wx.Panel):
         ws.append(temp)
         ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
         ws.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)
-        
+        cur_row += 1
 
         
-        cur_row += 1
-        ws.append(headers)
-        cur_row += 1
-        
-        ws.append([f'({to_roman(self.choice_1.GetSelection() + 2)} ступень)  {category_to_age(self.choice_1.GetSelection()+2)} лет {self.radio_box_1.GetStringSelection()}'])
-        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
-        
+        # Собираем заголовки колонок
+        for out_category in self.out_categories:
+            normatives_headers = []
+            for i in out_category.get_normatives_without_results():
+                normatives_headers.append(i + " Результат")
+                normatives_headers.append(i + " Баллы")
+            headers = ["Место", "ФИО","Дата рождения", "Нагрудн. Номер", "Команда" ] + normatives_headers + ["Сумма очков"]
+            ws.append(headers)
+            # Увеличение размера заголовков
+            ws.row_dimensions[cur_row].height = 70
+            
+            cur_row += 1
+            ws.append([f'({to_roman(out_category.get_category())} ступень)  {category_to_age(out_category.get_category())} лет {out_category.get_sex()}'])
+            ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+            
+            # Подсветка цветом категории и возраста 
+            ws[f'A{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
+            cur_row+=1
 
-        # Собираем данные
-        for row in range(row_count):
-            row_data = [self.list_ctrl_1.GetItemText(row, col) for col in range(col_count)]
-            ws.append(row_data)
+            # Собираем данные
+            for i in range(len(out_category.get_info())):
+                out = []
+                out.append(str(out_category.get_info()[i].get_place()))
+                out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
+                out.append(out_category.get_info()[i].get_date())
+                out.append(out_category.get_info()[i].get_number())
+                out.append(out_category.get_info()[i].get_team())
+                for j in range(0, len(out_category.get_info()[i].get_normatives())):
+                    if (j == 0 or j % 3 == 0):
+                        continue
+                    out.append(str(out_category.get_info()[i].get_normatives()[j]))
+                out.append(str(out_category.get_info()[i].get_sum()))
+                
+                self.list_ctrl_1.Append(out)
+                ws.append(out)
+                cur_row += 1
 
         # Сохраняем файл во временной директории
-        temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
-        wb.save(temp_file.name)
+        # temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
+        # wb.save(temp_file.name)
 
         # Копируем данные в буфер обмена в текстовом формате
-        output = []
-        for row in ws.iter_rows(values_only=True):
-            output.append('\t'.join(map(str, row)))
+        # output = []
+        # for row in ws.iter_rows(values_only=True):
+        #     output.append('\t'.join(map(str, row)))
         
         # читаемый шрифт
         font_style = Font(name='Times New Roman', size=16, vertAlign='baseline')
@@ -255,7 +293,7 @@ class Viewer(wx.Panel):
         ws.row_dimensions[2].height = 40
         ws.row_dimensions[3].height = 40
         ws.row_dimensions[4].height = 40
-        ws.row_dimensions[5].height = 70
+        
         for col in range(1, 1000):
             col_letter = openpyxl.utils.get_column_letter(col)
             ws.column_dimensions[col_letter].width = 20
@@ -263,23 +301,22 @@ class Viewer(wx.Panel):
         ws.column_dimensions['E'].width = 70
         
         
-        # Добавление цвета
-        fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
-        ws[f'A{cur_row}'].fill = fill
+
         
-        # Сохранение файла таблицы
-        pyperclip.copy('\n'.join(output))
+        # # Сохранение файла таблицы
+        # pyperclip.copy('\n'.join(output))
         wb.save('styled_document.xlsx')
         # Закрываем временный файл
-        temp_file.close()
+        # temp_file.close()
 
         # Уведомляем пользователя
         wx.MessageBox("Данные скопированы в буфер обмена!", "Успех", wx.OK | wx.ICON_INFORMATION)  
                 
     def get_data(self, event):
-        # удаление данных прошлого запроса
-        self.list_ctrl_1.DeleteAllItems()
+        #Удаление старых записей
         self.list_ctrl_1.DeleteAllColumns()
+        self.list_ctrl_1.DeleteAllItems()
+        
         # Для запроса в базу
         category = self.choice_1.GetSelection()+2
         sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())
@@ -287,6 +324,7 @@ class Viewer(wx.Panel):
         # Пример формата получаемых данных
         self.out_objects.append(Out_object(1, "Beltyukov","Mikhail", "Olegovich", "20.09.2004", "1", "Сургут", ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4], 20))
         self.out_objects.append(Out_object(2, "Beltyukov2","Mikhail2",  "Olegovich2", "20.09.2000", "2", "НеСургут", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 10))
+        self.out_categories.append(Out_category(self.out_objects, category, sex))
         # Строительство новых данных
         self.builder()
 # end of class Viewer
