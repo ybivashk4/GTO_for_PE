@@ -6,6 +6,8 @@
 
 import wx
 from registration import Registration
+from viewver import Viewer
+from inputer import Inputer
 # begin wxGlade: dependencies
 # end wxGlade
 
@@ -18,29 +20,21 @@ class MainFrame(wx.Frame):
         # begin wxGlade: MainFrame.__init__
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
-        self.SetSize((1000, 1000))
-        self.SetTitle("frame")
+        self.SetSize((1000, 830))
+        self.SetTitle("Помошник_ГТО")
 
-        self.panel_1 = wx.Panel(self, wx.ID_ANY)
+        grid_sizer_1 = wx.GridSizer(1, 1, 10, 10)
 
-        grid_sizer_1 = wx.FlexGridSizer(2, 1, 10, 10)
-
-        self.notebook_1 = wx.Notebook(self.panel_1, wx.ID_ANY, style=wx.NB_FIXEDWIDTH | wx.NB_TOP)
+        self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=wx.NB_FIXEDWIDTH | wx.NB_TOP)
         grid_sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
-
-        self.notebook_1_pane_1 = wx.Panel(self.notebook_1, wx.ID_ANY)
         
-        self.notebook_1.AddPage(self.notebook_1_pane_1, u"Просмоторщик")
+        self.notebook_1.AddPage(Viewer(self.notebook_1), u"Просмоторщик")
 
-        self.notebook_1_ = wx.Panel(self.notebook_1, wx.ID_ANY)
-        self.notebook_1.AddPage(self.notebook_1_, u"Ввод")
+        self.notebook_1.AddPage(Inputer(self.notebook_1), u"Ввод")
 
-        self.notebook_1_pane_2 = wx.Panel(self.notebook_1, wx.ID_ANY)
         self.notebook_1.AddPage(Registration(self.notebook_1), u"Регистрация")
 
-        grid_sizer_1.Add((0, 0), 0, 0, 0)
-
-        self.panel_1.SetSizer(grid_sizer_1)
+        self.SetSizer(grid_sizer_1)
 
         self.Layout()
         # end wxGlade

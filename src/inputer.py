@@ -26,13 +26,11 @@ class Input_data():
     def get_result(self):
         return self.result
 
-class Iputer(wx.Frame):
-    def __init__(self, *args, **kwds):
-        # begin wxGlade: Iputer.__init__
-        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
-        wx.Frame.__init__(self, *args, **kwds)
+class Inputer(wx.Panel):
+    def __init__(self, parent):
+        super(Inputer, self).__init__(parent) 
+        # begin wxGlade: Inputer.__init__
         self.SetSize((600, 550))
-        self.SetTitle("frame")
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
         self.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
@@ -114,14 +112,14 @@ class Iputer(wx.Frame):
         self.text_ctrl_2.SetValue("")
         self.choice_4.Set([])
         
-# end of class Iputer
+# end of class Inputer
 def some_func():
     return ["Бег", "Плаванье", "Подтягивания", "Отжимания"]
 def some_input_func(sorev, result):
     pass
 class MyApp(wx.App):
     def OnInit(self):
-        self.frame = Iputer(None, wx.ID_ANY, "")
+        self.frame = Inputer(None, wx.ID_ANY, "")
         self.SetTopWindow(self.frame)
         self.frame.Show()
         return True
