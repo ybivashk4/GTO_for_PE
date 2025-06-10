@@ -3,7 +3,7 @@ import wx
 import tempfile
 import openpyxl
 import pyperclip
-from openpyxl.styles import Font, Alignment, PatternFill
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 
 
 """
@@ -11,7 +11,10 @@ from openpyxl.styles import Font, Alignment, PatternFill
     * Сделать цвет у строчки с категорией+
     * Сделать Вывод верхней части таблицы+
     * Сделать Вывод нескольких таблиц+
-    * Сделать Вывод остальных листов
+    * Сделать Вывод остальных листов+
+    * Добавить рамки в таблицу+
+    * Добавить сообщение об ошибке в случае, если файл открыт+
+    * 
 """
 
 def to_roman(number:  int) -> str:
@@ -199,118 +202,207 @@ class Viewer(wx.Panel):
             
             
     def copy_all_to_clipboard(self, event):
-        # Создаем временный Excel файл
-        wb = openpyxl.Workbook()
-        ws = wb.active
-        
-        # Получаем количество строк и колонок
-        col_count = self.list_ctrl_1.GetColumnCount()
-        cur_row = 1
-        
-        # Вывод верхней шапки
-        ws.append(["Фестиваль Всероссийского физкультурно-спортивного комплекса \"Готов к труду и обороне\""])
-        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
-        cur_row += 1
-        ws.append(["Протокол соревнования"])
-        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
-        cur_row += 1
-        ws.append([" Зачёт"])
-        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
-        cur_row += 1
-        temp = ["Дата"]
-        for i in range(1, int(col_count/2)):
-            temp.append("")
-        temp.append("Город")
-        ws.append(temp)
-        ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
-        ws.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)
-        cur_row += 1
-
-        
-        # Собираем заголовки колонок
-        for out_category in self.out_categories:
-            normatives_headers = []
-            for i in out_category.get_normatives_without_results():
-                normatives_headers.append(i + " Результат")
-                normatives_headers.append(i + " Баллы")
-            headers = ["Место", "ФИО","Дата рождения", "Нагрудн. Номер", "Команда" ] + normatives_headers + ["Сумма очков"]
-            ws.append(headers)
-            # Увеличение размера заголовков
-            ws.row_dimensions[cur_row].height = 70
+        try:
+            # Создаем временный Excel файл
+            wb = openpyxl.Workbook()
+            ws = wb.create_sheet("Личный зачёт")
+            del wb['Sheet']
+            # Получаем количество строк и колонок
+            col_count = self.list_ctrl_1.GetColumnCount()
+            cur_row = 1
             
-            cur_row += 1
-            ws.append([f'({to_roman(out_category.get_category())} ступень)  {category_to_age(out_category.get_category())} лет {out_category.get_sex()}'])
+            # Вывод верхней шапки
+            ws.append(["Фестиваль Всероссийского физкультурно-спортивного комплекса \"Готов к труду и обороне\""])
             ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+            cur_row += 1
+            ws.append(["Протокол соревнования"])
+            ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+            cur_row += 1
+            ws.append(["Личный зачёт"])
+            ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+            cur_row += 1
+            temp = ["Дата"]
+            for i in range(1, int(col_count/2)):
+                temp.append("")
+            temp.append("Город")
+            ws.append(temp)
+            ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
+            ws.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)
+            cur_row += 1
+
             
-            # Подсветка цветом категории и возраста 
-            ws[f'A{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
-            cur_row+=1
-
-            # Собираем данные
-            for i in range(len(out_category.get_info())):
-                out = []
-                out.append(str(out_category.get_info()[i].get_place()))
-                out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
-                out.append(out_category.get_info()[i].get_date())
-                out.append(out_category.get_info()[i].get_number())
-                out.append(out_category.get_info()[i].get_team())
-                for j in range(0, len(out_category.get_info()[i].get_normatives())):
-                    if (j == 0 or j % 3 == 0):
-                        continue
-                    out.append(str(out_category.get_info()[i].get_normatives()[j]))
-                out.append(str(out_category.get_info()[i].get_sum()))
+            # Собираем заголовки колонок
+            for out_category in self.out_categories:
+                normatives_headers = []
+                for i in out_category.get_normatives_without_results():
+                    normatives_headers.append(i + " Результат")
+                    normatives_headers.append(i + " Баллы")
+                headers = ["Место", "ФИО","Дата рождения", "Нагрудн. Номер", "Команда" ] + normatives_headers + ["Сумма очков"]
+                ws.append(headers)
+                # Увеличение размера заголовков
+                ws.row_dimensions[cur_row].height = 70
                 
-                self.list_ctrl_1.Append(out)
-                ws.append(out)
                 cur_row += 1
+                ws.append([f'({to_roman(out_category.get_category())} ступень)  {category_to_age(out_category.get_category())} лет {out_category.get_sex()}'])
+                ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+                
+                # Подсветка цветом категории и возраста 
+                ws[f'A{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
+                cur_row+=1
 
-        # Сохраняем файл во временной директории
-        # temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
-        # wb.save(temp_file.name)
+                # Собираем данные
+                for i in range(len(out_category.get_info())):
+                    out = []
+                    out.append(str(out_category.get_info()[i].get_place()))
+                    out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
+                    out.append(out_category.get_info()[i].get_date())
+                    out.append(out_category.get_info()[i].get_number())
+                    out.append(out_category.get_info()[i].get_team())
+                    for j in range(0, len(out_category.get_info()[i].get_normatives())):
+                        if (j == 0 or j % 3 == 0):
+                            continue
+                        out.append(str(out_category.get_info()[i].get_normatives()[j]))
+                    out.append(str(out_category.get_info()[i].get_sum()))
+                    
+                    ws.append(out)
+                    cur_row += 1
+            
+            # Добавление нижней части
+            temp = ["Главный судья, судья <> категории"]
+            for i in range(1, int(col_count/2)):
+                temp.append("")
+            temp.append("<ФИО>")
+            ws.append(temp)
+            ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
+            ws.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)
+            cur_row+=1
+            temp = ["Главный секретарь, судья <> категории"]
+            for i in range(1, int(col_count/2)):
+                temp.append("")
+            temp.append("<ФИО>")
+            ws.append(temp)
+            ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
+            ws.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)    
+            # Сохраняем файл во временной директории
+            # temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
+            # wb.save(temp_file.name)
 
-        # Копируем данные в буфер обмена в текстовом формате
-        # output = []
-        # for row in ws.iter_rows(values_only=True):
-        #     output.append('\t'.join(map(str, row)))
-        
-        # читаемый шрифт
-        font_style = Font(name='Times New Roman', size=16, vertAlign='baseline')
-        alignment= Alignment(horizontal='center', vertical='center', wrap_text=True)
-        for row in ws.iter_rows():
-            for cell in row:
-                cell.font = font_style
-                cell.alignment = alignment
-        
-        # Верхняя часть
-        ws['A1'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
-        ws['A2'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
-        ws['A3'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
-        ws['A4'].font = Font(name='Times New Roman', size=28, vertAlign='baseline')
-        ws['G4'].font = Font(name='Times New Roman', size=28, vertAlign='baseline')
-        
-        # Размеры ячеек
-        ws.row_dimensions[1].height = 70
-        ws.row_dimensions[2].height = 40
-        ws.row_dimensions[3].height = 40
-        ws.row_dimensions[4].height = 40
-        
-        for col in range(1, 1000):
-            col_letter = openpyxl.utils.get_column_letter(col)
-            ws.column_dimensions[col_letter].width = 20
-        ws.column_dimensions['B'].width = 60
-        ws.column_dimensions['E'].width = 70
-        
-        
+            # Копируем данные в буфер обмена в текстовом формате
+            # output = []
+            # for row in ws.iter_rows(values_only=True):
+            #     output.append('\t'.join(map(str, row)))
+            
+            # читаемый шрифт
+            font_style = Font(name='Times New Roman', size=16, vertAlign='baseline')
+            alignment= Alignment(horizontal='center', vertical='center', wrap_text=True)
+            for row in ws.iter_rows():
+                for cell in row:
+                    cell.font = font_style
+                    cell.alignment = alignment
+            
+            
+            
+            # Верхняя часть
+            ws['A1'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
+            ws['A2'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
+            ws['A3'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
+            ws['A4'].font = Font(name='Times New Roman', size=28, vertAlign='baseline')
+            ws['G4'].font = Font(name='Times New Roman', size=28, vertAlign='baseline')
+            
+            # Размеры ячеек
+            ws.row_dimensions[1].height = 70
+            ws.row_dimensions[2].height = 40
+            ws.row_dimensions[3].height = 40
+            ws.row_dimensions[4].height = 40
+            
+            for col in range(1, 1000):
+                col_letter = openpyxl.utils.get_column_letter(col)
+                ws.column_dimensions[col_letter].width = 20
+            ws.column_dimensions['B'].width = 60
+            ws.column_dimensions['E'].width = 70
+            
+            
+            
+            ws2 = wb.create_sheet("командный зачёт")
+            cur_row = 1
+            col_count = 3
+            ws2.append(["Фестиваль Всероссийского физкультурно-спортивного комплекса \"Готов к труду и обороне\""])
+            ws2.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+            cur_row += 1
+            ws2.append(["Протокол команднного зачёта"])
+            ws2.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
+            cur_row += 1
+            temp = ["<Дата>"]
+            for i in range(1, int(col_count/2)):
+                temp.append("")
+            temp.append("<Город>")
+            ws2.append(temp)
+            ws2.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
+            ws2.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)
+            cur_row += 1
+            
+            ws2.row_dimensions[1].height = 80
+            ws2.row_dimensions[2].height = 40
+            ws2.row_dimensions[3].height = 40
+            ws2.row_dimensions[4].height = 40
+            ws2.column_dimensions['A'].width = 70
+            ws2.column_dimensions['B'].width = 70
+            ws2.column_dimensions['C'].width = 70
 
-        
-        # # Сохранение файла таблицы
-        # pyperclip.copy('\n'.join(output))
-        wb.save('styled_document.xlsx')
-        # Закрываем временный файл
-        # temp_file.close()
 
-        # Уведомляем пользователя
-        wx.MessageBox("Данные скопированы в буфер обмена!", "Успех", wx.OK | wx.ICON_INFORMATION)  
+            # # Сохранение файла таблицы
+            # pyperclip.copy('\n'.join(output))
+            
+            headers = ["Место", "Команда", "Сумма очков"]
+            ws2.append(headers)
+            ws2[f'A{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
+            ws2[f'B{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
+            ws2[f'C{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
+            cur_row += 1
+            example_team_out = [["1", "Сургут", "20"], ["2", "НеСургут", "10"]]
+            
+            
+            
+            for i in example_team_out:
+                ws2.append(i)
+                cur_row += 1
+                
+            temp = ["Главный судья, судья <> категории"]
+            for i in range(1, int(col_count/2)):
+                temp.append("")
+            temp.append("<ФИО>")
+            ws2.append(temp)
+            ws2.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
+            ws2.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)
+            cur_row+=1
+            temp = ["Главный секретарь, судья <> категории"]
+            for i in range(1, int(col_count/2)):
+                temp.append("")
+            temp.append("<ФИО>")
+            
+            ws2.append(temp)
+            ws2.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
+            ws2.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count) 
+            for row in ws2.iter_rows():
+                for cell in row:
+                    cell.font = font_style
+                    cell.alignment = alignment
+            ws2['A1'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
+            ws2['A2'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
+            ws2['A3'].font = Font(name='Times New Roman', size=28, vertAlign='baseline')
+            ws2['B3'].font = Font(name='Times New Roman', size=28, vertAlign='baseline')
+            for cell in ws._cells.values():
+                cell.border = Border(top=Side(border_style='thin', color='000000'), bottom=Side(border_style='thin', color='000000'), left=Side(border_style='thin', color='000000'), right=Side(border_style='thin', color='000000'))
+            for cell in ws2._cells.values():
+                cell.border = Border(top=Side(border_style='thin', color='000000'), bottom=Side(border_style='thin', color='000000'), left=Side(border_style='thin', color='000000'), right=Side(border_style='thin', color='000000'))
+            wb.save('Итоговый протокол.xlsx')
+            # Закрываем временный файл
+            # temp_file.close()
+
+            # Уведомляем пользователя
+            wx.MessageBox("Данные скопированы в буфер обмена!", "Успех", wx.OK | wx.ICON_INFORMATION)  
+        except:
+            wx.MessageBox("Файл уже открыт, закройте его", "Ошибка", wx.OK | wx.ICON_ERROR)  
                 
     def get_data(self, event):
         #Удаление старых записей
