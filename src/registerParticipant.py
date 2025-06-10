@@ -40,8 +40,15 @@ def register(Surname, Name, Patronymic, Sex, BirthDate, ParticipantNumber, Team)
         grade = 17
     elif 70 <= age:
         grade = 18
-    command = "INSERT INTO Participants VALUES ((SELECT (MAX(Id)+1) from Participants),'" + Surname + "', '" + Name + "', '" + Patronymic + "', '" + Sex + "', '" + BirthDate + "', " + str(ParticipantNumber) + ", '" + Team + "', " + str(grade)+")"
-    print(command)
+    command = f"INSERT INTO Participants VALUES ((SELECT (COUNT(*)+1) from Participants), '{Surname}', '{Name}', '{Patronymic}', '{Sex}', '{BirthDate}', {str(ParticipantNumber)}, '{Team}', {str(grade)})"
+    cur.execute(command)
+    con.commit()
+    if Sex == "Мужской":
+        chosen_sex = "Male"
+    else:
+        chosen_sex = "Female"
+    table_name = f"Grade {str(grade)} {str(chosen_sex)}"
+    command = f"INSERT INTO {table_name} (Id, ParticipantId) VALUES ((SELECT (COUNT(*)+1) from {table_name} ), (SELECT MAX(Id) from Participants))"
     cur.execute(command)
     con.commit()
     cur.close()

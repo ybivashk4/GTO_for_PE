@@ -211,8 +211,8 @@ class Registration(wx.Panel):
         # end wxGlade
     def on_confirm(self, event):
         # Оставляем от имени только буквы, создаём шаблон для записи, где первая буква - заглавная, остальные маленькие
-        name = self.text_ctrl_1.GetValue().strip().capitalize()
-        surname = self.text_ctrl_2.GetValue().strip().capitalize()
+        surname = self.text_ctrl_1.GetValue().strip().capitalize()
+        name = self.text_ctrl_2.GetValue().strip().capitalize()
         thirdname = self.text_ctrl_3.GetValue().strip().capitalize()
         if (len(name) == 2):
             wx.MessageBox("Есть пустое поле в ФИО", "Ошибка", wx.ICON_ERROR)
