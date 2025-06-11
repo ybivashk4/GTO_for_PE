@@ -23,9 +23,9 @@ def outputAllGradeResults(Grade, Sex):
             normatives.append(j)
             normatives.append(i[k])
             normatives.append(i[k+1])
-            k+=2
-        Out_object = (ind+1, user[1], user[2], user[3], new_birth_date, str(user[6]), user[7], normatives, i[len(i)-1])
-        output_data.append(Out_object)
+            k += 2
+        out_object = (ind+1, user[1], user[2], user[3], new_birth_date, str(user[6]), user[7], normatives, i[len(i)-1])
+        output_data.append(out_object)
     cur.close()
     con.close()
     return output_data

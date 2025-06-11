@@ -5,7 +5,7 @@ def clear():
     command = "DELETE FROM Participants"
     cur.execute(command)
     con.commit()
-    for i in range (2, 19):
+    for i in range(2, 19):
         command = f"DELETE FROM Grade{i}Male"
         cur.execute(command)
         con.commit()
