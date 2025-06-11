@@ -21,7 +21,10 @@ def outputAllGradeResults(Grade, Sex):
         k = 2
         for j in competition_names:
             normatives.append(j)
-            normatives.append(i[k])
+            if i[k]:
+                normatives.append(i[k])
+            else:
+                normatives.append('Не участвовал(а)')
             normatives.append(i[k+1])
             k += 2
         out_object = (ind+1, user[1], user[2], user[3], new_birth_date, str(user[6]), user[7], normatives, i[len(i)-1])
@@ -29,5 +32,3 @@ def outputAllGradeResults(Grade, Sex):
     cur.close()
     con.close()
     return output_data
-
-
