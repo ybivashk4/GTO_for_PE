@@ -10,7 +10,7 @@ def outputAllGradeResults(Grade, Sex):
     cur.execute(command)
     result = cur.fetchall()
     output_data = []
-    for i in result:
+    for ind, i in enumerate(result):
         command = f"SELECT * FROM Participants WHERE ParticipantNumber = {i[1]}"
         cur.execute(command)
         user = cur.fetchone()
@@ -24,9 +24,12 @@ def outputAllGradeResults(Grade, Sex):
             normatives.append(i[k])
             normatives.append(i[k+1])
             k+=2
-        Out_object = (i[0], user[1], user[2], user[3], new_birth_date, str(user[6]), user[7], normatives, i[len(i)-1])
+        Out_object = (ind+1, user[1], user[2], user[3], new_birth_date, str(user[6]), user[7], normatives, i[len(i)-1])
         output_data.append(Out_object)
     cur.close()
     con.close()
     return output_data
+
+for i in outputAllGradeResults(8, "Мужской"):
+    print(i)
 
