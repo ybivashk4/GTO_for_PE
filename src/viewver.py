@@ -14,7 +14,8 @@ from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
     * Сделать Вывод остальных листов+
     * Добавить рамки в таблицу+
     * Добавить сообщение об ошибке в случае, если файл открыт+
-    * 
+    * Поменять скопировать на сохранить файл+
+    * Выбор отображаемых соревнований 
 """
 
 def to_roman(number:  int) -> str:
@@ -141,38 +142,45 @@ class Viewer(wx.Panel):
         super(Viewer, self).__init__(parent) 
         self.SetSize((600, 800))
         
+        normatives = ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4]
         
-        grid_sizer_1 = wx.FlexGridSizer(5, 1, 0, 0)
+        grid_sizer_1 = wx.FlexGridSizer(8, 1, 0, 0)
         
         self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=[u"2 категория", u"3 категория", u"4 категория", u"5 категория", u"6 категория", u"7 категория", u"8 категория", u"9 категория", u"10 категория", u"11 категория", u"12 категория", u"13 категория", u"14 категория", u"15 категория", u"16 категория", u"17 категория", u"18 категория"])
         self.choice_1.SetSelection(0)
         grid_sizer_1.Add(self.choice_1, 0, 0, 0)
 
-        self.radio_box_1 = wx.RadioBox(self, wx.ID_ANY, "", choices=[u"Мужской", u"Женский"], majorDimension=1, style=wx.RA_SPECIFY_COLS)
+        self.radio_box_1 = wx.RadioBox(self, wx.ID_ANY, "", choices=[u"Мужской", u"Женский"], majorDimension=1, style=wx.RA_SPECIFY_ROWS)
         self.radio_box_1.SetSelection(0)
         grid_sizer_1.Add(self.radio_box_1, 0, 0, 0)
-
-        self.button_2 = wx.Button(self, wx.ID_ANY, "Подтвердить")
+        
+        self.check_list_box_1 = wx.CheckListBox(self, wx.ID_ANY, choices=[normatives[i] for i in range(0, len(normatives), 3)])
+        grid_sizer_1.Add(self.check_list_box_1, 0, 0, 0)
+        
+        self.button_2 = wx.Button(self, wx.ID_ANY, "Добавить в протокол")
         grid_sizer_1.Add(self.button_2, 0, 0, 0)
         
+        self.button_3 = wx.Button(self, wx.ID_ANY, "Посмотреть категорию")
+        grid_sizer_1.Add(self.button_3, 0, 0, 0)
+        
         self.list_ctrl_1 = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_HRULES | wx.LC_REPORT | wx.LC_VRULES)
-        self.list_ctrl_1.SetMinSize(wx.Size(10000, 600))
+        self.list_ctrl_1.SetMinSize(wx.Size(10000, 400))
         self.list_ctrl_1.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         self.list_ctrl_1.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         
         grid_sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
-        self.button_1 = wx.Button(self, wx.ID_ANY, "Скопировать таблицу")
+        self.button_1 = wx.Button(self, wx.ID_ANY, "Сохранить протокол")
         grid_sizer_1.Add(self.button_1, 0, 0, 0)
         
         
-        self.button_1.Bind(wx.EVT_BUTTON, self.copy_all_to_clipboard)
-        self.button_2.Bind(wx.EVT_BUTTON, self.get_data)
-        
+        self.button_1.Bind(wx.EVT_BUTTON, self.save_as_excel)
+        self.button_2.Bind(wx.EVT_BUTTON, self.get_data_protocol)
+        self.button_3.Bind(wx.EVT_BUTTON, self.get_data)
         self.SetSizer(grid_sizer_1)
 
         self.Layout()
         # end wxGlade
-    def builder(self):
+    def builder_protocol(self):
         
         self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
         self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
@@ -200,8 +208,34 @@ class Viewer(wx.Panel):
                 
                 self.list_ctrl_1.Append(out)
             
+    def builder(self):
+        
+        self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
+        self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
+        self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
+        self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
+        self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
+        for j in range(0, len(self.out_objects[0].get_normatives()), 3):
+            self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Результат", format=wx.LIST_FORMAT_LEFT, width=200)
+            self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
+                
+        self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
+        for i in self.out_objects:
+            out = []
+            out.append(str(i.get_place()))
+            out.append(i.get_surname() + " " + i.get_name() + " " + i.get_thirdname())
+            out.append(i.get_date())
+            out.append(i.get_number())
+            out.append(i.get_team())
+            for j in range(0, len(i.get_normatives())):
+                if (j == 0 or j % 3 == 0):
+                    continue
+                out.append(str(i.get_normatives()[j]))
+            out.append(str(i.get_sum()))
             
-    def copy_all_to_clipboard(self, event):
+            self.list_ctrl_1.Append(out)
+                
+    def save_as_excel(self, event):
         try:
             # Создаем временный Excel файл
             wb = openpyxl.Workbook()
@@ -404,7 +438,7 @@ class Viewer(wx.Panel):
         except:
             wx.MessageBox("Файл уже открыт, закройте его", "Ошибка", wx.OK | wx.ICON_ERROR)  
                 
-    def get_data(self, event):
+    def get_data_protocol(self, event):
         #Удаление старых записей
         self.list_ctrl_1.DeleteAllColumns()
         self.list_ctrl_1.DeleteAllItems()
@@ -418,8 +452,17 @@ class Viewer(wx.Panel):
         self.out_objects.append(Out_object(2, "Beltyukov2","Mikhail2",  "Olegovich2", "20.09.2000", "2", "НеСургут", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 10))
         self.out_categories.append(Out_category(self.out_objects, category, sex))
         # Строительство новых данных
-        self.builder()
+        self.builder_protocol()
 # end of class Viewer
+    def get_data(self, event):
+        #Удаление старых записей
+        self.list_ctrl_1.DeleteAllColumns()
+        self.list_ctrl_1.DeleteAllItems()
+        self.out_objects.clear()
+        # Пример формата получаемых данных
+        self.out_objects.append(Out_object(1, "Beltyukov","Mikhail", "Olegovich", "20.09.2004", "1", "Сургут", ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4], 20))
+        self.out_objects.append(Out_object(2, "Beltyukov2","Mikhail2",  "Olegovich2", "20.09.2000", "2", "НеСургут", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 10))
+        self.builder()
 
 class MyApp(wx.App):
     def OnInit(self):
