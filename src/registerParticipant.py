@@ -47,7 +47,7 @@ def register(Surname, Name, Patronymic, Sex, BirthDate, ParticipantNumber, Team)
         chosen_sex = "Male"
     else:
         chosen_sex = "Female"
-    table_name = f"Grade {str(grade)} {str(chosen_sex)}"
+    table_name = f"Grade{str(grade)}{str(chosen_sex)}"
     command = f"INSERT INTO {table_name} (Id, ParticipantId) VALUES ((SELECT (COUNT(*)+1) from {table_name} ), (SELECT MAX(Id) from Participants))"
     cur.execute(command)
     con.commit()
