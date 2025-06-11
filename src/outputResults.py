@@ -30,6 +30,4 @@ def outputAllGradeResults(Grade, Sex):
     con.close()
     return output_data
 
-for i in outputAllGradeResults(8, "Мужской"):
-    print(i)
 
