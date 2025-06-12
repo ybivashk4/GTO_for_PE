@@ -62,4 +62,7 @@ def outputTeamsResults():
                 team_score += team_member_score[0]
         team_result.append(team_score)
         teams_results.append(team_result)
+        teams_results.sort(reverse=True, key=lambda x: x[1])
+    for i in range(len(teams_results)):
+        teams_results[i].insert(0, i+1)
     return teams_results
