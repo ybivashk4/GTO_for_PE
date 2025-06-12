@@ -6,7 +6,7 @@
 
 import wx
 from inputResult import inputResult
-
+from getCompetitionNames import getCompetitionNamesNumber
 # begin wxGlade: dependencies
 # end wxGlade
 
@@ -30,6 +30,7 @@ class Input_data():
 class Inputer(wx.Panel):
     def __init__(self, parent):
         super(Inputer, self).__init__(parent) 
+        self.number = 0
         # begin wxGlade: Inputer.__init__
         self.SetSize((600, 550))
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
@@ -96,26 +97,28 @@ class Inputer(wx.Panel):
         self.Layout()
         # end wxGlade
     def search_button(self, event):
+        
         try:
-            int(self.text_ctrl_1.GetValue().strip().replace(",", "."))
+            self.number = int(self.text_ctrl_1.GetValue().strip().replace(",", "."))
         except:
             wx.MessageBox("Введите численное значение в поле Номер участника", "Ошибка", wx.ICON_ERROR)
             return
-
-        self.choice_4.Set(some_func())
+        if (getCompetitionNamesNumber(self.number) == None):
+            wx.MessageBox("Нет такого участника", "Информация", wx.ICON_INFORMATION)
+            return
+        self.choice_4.Set(getCompetitionNamesNumber(self.number))
+        wx.MessageBox("В соревнованиях появился выбор", "Успех", wx.ICON_INFORMATION)
     def input_button(self, event):
         if (self.choice_4.GetSelection() == -1):
             wx.MessageBox("Выберите соревнование в поле соревнование", "Информация", wx.ICON_INFORMATION)
             return
         else:
-            inputResult(self.choice_4.GetStringSelection(), self.text_ctrl_2.GetValue())
+            inputResult(self.number, self.choice_4.GetStringSelection(), self.text_ctrl_2.GetValue())
+            wx.MessageBox("Информация внесена", "Успех", wx.ICON_INFORMATION)
         self.text_ctrl_1.SetValue("")
         self.text_ctrl_2.SetValue("")
         self.choice_4.Set([])
         
-# end of class Inputer
-def some_func():
-    return ["Бег", "Плаванье", "Подтягивания", "Отжимания"]
 
 class MyApp(wx.App):
     def OnInit(self):
