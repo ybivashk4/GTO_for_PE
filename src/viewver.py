@@ -17,6 +17,9 @@ from getCompetitionNames import getCompetitionNames
     * Поменять скопировать на сохранить файл+
     * Выбор отображаемых соревнований+
     * Удаление последней записи в протоколе+
+    * Стиль кнопок
+    * Заменить на личный зачет
+    * сделать нормально вкл/выкл всё
 """
 
 def to_roman(number:  int) -> str:
@@ -142,7 +145,7 @@ class Viewer(wx.Panel):
         # begin wxGlade: Viewer.__init__
         super(Viewer, self).__init__(parent) 
         self.SetSize((600, 800))
-        
+        self.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
         
         
         self.grid_sizer_1 = wx.FlexGridSizer(10, 1, 0, 0)
@@ -161,24 +164,37 @@ class Viewer(wx.Panel):
         self.grid_sizer_1.Add(self.check_list_box_1, 0, 0, 0)
         
         self.check_box_1 = wx.CheckBox(self, wx.ID_ANY, 'Включить/выключить всё')
+        self.check_box_1.SetValue(True)
         self.grid_sizer_1.Add(self.check_box_1, 0, 0, 0)
         
         self.button_2 = wx.Button(self, wx.ID_ANY, "Добавить в протокол")
+        self.button_2.SetBackgroundColour(wx.Colour(204, 50, 50))
+        self.button_2.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        self.button_2.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_2, 0, 0, 0)
         
         self.button_4 = wx.Button(self, wx.ID_ANY, "Удалить последнюю запись из протокола")
+        self.button_4.SetBackgroundColour(wx.Colour(204, 50, 50))
+        self.button_4.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        self.button_4.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_4, 0, 0, 0)
         
         self.button_3 = wx.Button(self, wx.ID_ANY, "Посмотреть категорию")
+        self.button_3.SetBackgroundColour(wx.Colour(204, 50, 50))
+        self.button_3.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        self.button_3.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_3, 0, 0, 0)
         
         self.list_ctrl_1 = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_HRULES | wx.LC_REPORT | wx.LC_VRULES)
-        self.list_ctrl_1.SetMinSize(wx.Size(10000, 400))
+        self.list_ctrl_1.SetMinSize(wx.Size(10000, 350))
         self.list_ctrl_1.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         self.list_ctrl_1.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         
         self.grid_sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
         self.button_1 = wx.Button(self, wx.ID_ANY, "Сохранить протокол")
+        self.button_1.SetBackgroundColour(wx.Colour(204, 50, 50))
+        self.button_1.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        self.button_1.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_1, 0, 0, 0)
         
         
@@ -515,10 +531,11 @@ class Viewer(wx.Panel):
         category = self.choice_1.GetSelection()+2
         sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())        
         self.normatives = getCompetitionNames(category, sex)
-        if all(self.check_list_box_1.IsChecked(i) for i in range(len(self.normatives))):
-            self.check_list_box_1.SetCheckedItems([])
-        else:
+        if self.check_box_1.GetValue():
             self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
+        else:
+            self.check_list_box_1.SetCheckedItems([])
+            
 class MyApp(wx.App):
     def OnInit(self):
         self.frame = Viewer(None, wx.ID_ANY, "")
