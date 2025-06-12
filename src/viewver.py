@@ -209,7 +209,7 @@ class Viewer(wx.Panel):
                 self.list_ctrl_1.Append(out)
             
     def builder(self):
-        
+        "Поставить трай эксепт в случае отсутствия записи в категории"
         self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
         self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
@@ -255,10 +255,10 @@ class Viewer(wx.Panel):
             ws.append(["Личный зачёт"])
             ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=col_count)
             cur_row += 1
-            temp = ["Дата"]
+            temp = ["<Введите Дату>"]
             for i in range(1, int(col_count/2)):
                 temp.append("")
-            temp.append("Город")
+            temp.append("<Введите Город>")
             ws.append(temp)
             ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
             ws.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)
@@ -305,7 +305,7 @@ class Viewer(wx.Panel):
             temp = ["Главный судья, судья <> категории"]
             for i in range(1, int(col_count/2)):
                 temp.append("")
-            temp.append("<ФИО>")
+            temp.append("<Введите ФИО>")
             ws.append(temp)
             ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
             ws.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)
@@ -313,7 +313,7 @@ class Viewer(wx.Panel):
             temp = ["Главный секретарь, судья <> категории"]
             for i in range(1, int(col_count/2)):
                 temp.append("")
-            temp.append("<ФИО>")
+            temp.append("<Введите ФИО>")
             ws.append(temp)
             ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count/2))
             ws.merge_cells(start_row=cur_row, start_column=int(col_count)/2+1, end_row=cur_row, end_column=col_count)    
@@ -334,8 +334,6 @@ class Viewer(wx.Panel):
                     cell.font = font_style
                     cell.alignment = alignment
             
-            
-            
             # Верхняя часть
             ws['A1'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
             ws['A2'].font = Font(name='Times New Roman', size=28, vertAlign='baseline', bold=True)
@@ -354,8 +352,6 @@ class Viewer(wx.Panel):
                 ws.column_dimensions[col_letter].width = 20
             ws.column_dimensions['B'].width = 60
             ws.column_dimensions['E'].width = 70
-            
-            
             
             ws2 = wb.create_sheet("командный зачёт")
             cur_row = 1
@@ -383,7 +379,6 @@ class Viewer(wx.Panel):
             ws2.column_dimensions['B'].width = 70
             ws2.column_dimensions['C'].width = 70
 
-
             # # Сохранение файла таблицы
             # pyperclip.copy('\n'.join(output))
             
@@ -394,8 +389,6 @@ class Viewer(wx.Panel):
             ws2[f'C{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
             cur_row += 1
             example_team_out = [["1", "Сургут", "20"], ["2", "НеСургут", "10"]]
-            
-            
             
             for i in example_team_out:
                 ws2.append(i)
@@ -460,8 +453,9 @@ class Viewer(wx.Panel):
         self.list_ctrl_1.DeleteAllItems()
         self.out_objects.clear()
         # Пример формата получаемых данных
-        self.out_objects.append(Out_object(1, "Beltyukov","Mikhail", "Olegovich", "20.09.2004", "1", "Сургут", ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4], 20))
-        self.out_objects.append(Out_object(2, "Beltyukov2","Mikhail2",  "Olegovich2", "20.09.2000", "2", "НеСургут", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 10))
+        
+        for i in outputAllGradeResaults(self.choice_1.GetSelection()+2, self.radio_box_1.GetStringSelection()):
+            self.out_objects.append(Out_object(i[0], i[1],i[2], i[3], i[4], i[5], i[6], i[7], i[8]))
         self.builder()
 
 class MyApp(wx.App):
