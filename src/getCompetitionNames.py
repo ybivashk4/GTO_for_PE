@@ -16,3 +16,12 @@ def getCompetitionNames(Grade, Sex):
     cur.close()
     con.close()
     return column_names
+
+def getCompetitionNamesNumber(Number):
+    con = connect('../GTO.db')
+    cur = con.cursor()
+    command = f"SELECT GTOGrade, Sex FROM Participants WHERE ParticipantNumber = {Number}"
+    cur.execute(command)
+    user = cur.fetchone()
+    if user:
+        return getCompetitionNames(user[0], user[1])
