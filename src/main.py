@@ -18,6 +18,7 @@ from clearTables import clear
 """
     TODO:
         Сделать удаление по номеру 
+        Сделать вывод по командам
 """
 
 class MainFrame(wx.Frame):
@@ -28,7 +29,7 @@ class MainFrame(wx.Frame):
         self.SetSize((1000, 900))
         self.SetTitle("Помошник_ГТО")
 
-        grid_sizer_1 = wx.FlexGridSizer(2, 1, 10, 10)
+        grid_sizer_1 = wx.FlexGridSizer(1, 1, 10, 10)
 
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=wx.NB_FIXEDWIDTH | wx.NB_TOP)
         grid_sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
@@ -39,25 +40,26 @@ class MainFrame(wx.Frame):
 
         self.notebook_1.AddPage(Registration(self.notebook_1), u"Регистрация")
 
-        self.button_1 = wx.Button(self, wx.ID_ANY, "Удалить всё")
-        self.button_1.SetBackgroundColour(wx.RED)
-        self.button_1.SetForegroundColour(wx.WHITE)
-        self.button_1.Bind(wx.EVT_BUTTON, self.del_all )
-        grid_sizer_1.Add(self.button_1)
-        self.SetSizer(grid_sizer_1,)
+        # self.button_1 = wx.Button(self, wx.ID_ANY, "Удалить всё")
+        # self.button_1.SetBackgroundColour(wx.RED)
+        # self.button_1.SetForegroundColour(wx.WHITE)
+        # self.button_1.Bind(wx.EVT_BUTTON, self.del_all )
+        # grid_sizer_1.Add(self.button_1)
+        self.SetSizer(grid_sizer_1)
 
         self.Layout()
         # end wxGlade
-    def del_all(self, event):
-        dialog = wx.MessageDialog(self, """
-                      Нажатие этой кнопки удаляет все записи об этом соревновании,
-                      рекомендуем нажимать эту кнопку только в том случае, если соревнование закончилось.
-                      Вы уверены, что хотите удалить все данные ?
-                      """, "ВНИМАНИЕ!", wx.YES_NO | wx.ICON_WARNING | wx.CANCEL)
-        answer = dialog.ShowModal()
-        dialog.Destroy()
-        if answer == wx.ID_YES:
-            clear()
+    # def del_all(self, event):
+    #     dialog = wx.MessageDialog(self, """
+    #                   Нажатие этой кнопки удаляет все записи об этом соревновании,
+    #                   рекомендуем нажимать эту кнопку только в том случае,
+    #                   если соревнование закончилось.
+    #                   Вы уверены, что хотите удалить все данные ?
+    #                   """, "ВНИМАНИЕ!", wx.YES_NO | wx.ICON_WARNING | wx.CANCEL)
+    #     answer = dialog.ShowModal()
+    #     dialog.Destroy()
+    #     if answer == wx.ID_YES:
+    #         clear()
         
 # end of class MainFrame
 
