@@ -43,7 +43,7 @@ class MainFrame(wx.Frame):
 
         self.notebook_1.AddPage(Deleter(self.notebook_1), u"Удаление")
         
-        self.notebook_1.AddPage(Team_viewer(self.notebook_1), u"Командный зачёт")
+        self.notebook_1.AddPage(Team_viewer(self.notebook_1), u"Командный зачет")
         
         self.SetSizer(grid_sizer_1)
 
