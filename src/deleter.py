@@ -7,26 +7,13 @@
 import wx
 from getCompetitionNames import getCompetitionNamesNumber
 from clearTables import clear
-
+from removeParticipant import removeParticipant
 # begin wxGlade: dependencies
 # end wxGlade
 
 # begin wxGlade: extracode
 # end wxGlade 
 
-class Input_data():
-    def __init__(self, number, sorev, result) -> None:
-        self.number = number
-        self.sorev = sorev
-        self.result = result
-    def get_number(self):
-        return self.number
-    
-    def get_sorev(self):
-        return self.sorev
-    
-    def get_result(self):
-        return self.result
 
 class Deleter(wx.Panel):
     def __init__(self, parent):
@@ -38,8 +25,11 @@ class Deleter(wx.Panel):
         self.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
         self.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
 
-        grid_sizer_1 = wx.FlexGridSizer(4, 1, 30, 0)
-
+        grid_sizer_1 = wx.FlexGridSizer(8, 1, 30, 0)
+        label_4 = wx.StaticText(self, wx.ID_ANY, u"Удаление одной записи", style=wx.ALIGN_CENTER_HORIZONTAL)
+        label_4.SetFont(wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
+        grid_sizer_1.Add(label_4, 1, wx.ALIGN_CENTER)
+        
         grid_sizer_2 = wx.FlexGridSizer(2, 1, 10, 0)
         grid_sizer_1.Add(grid_sizer_2, 1, wx.LEFT | wx.RIGHT, 30)
 
@@ -78,15 +68,49 @@ class Deleter(wx.Panel):
         self.button_5.SetMinSize((145, 50))
         self.button_5.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_5.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        
         grid_sizer_4.Add(self.button_5, 1, wx.ALIGN_CENTER | wx.ALL, 5)
         
+        
+        label_5 = wx.StaticText(self, wx.ID_ANY, u"Удаление участника по номеру", style=wx.ALIGN_CENTER_HORIZONTAL)
+        label_5.SetFont(wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
+        grid_sizer_1.Add(label_5, 1, wx.ALIGN_CENTER)
+        
+        grid_sizer_6 = wx.FlexGridSizer(3, 1, 10, 0)
+        grid_sizer_1.Add(grid_sizer_6)
+        label_2 = wx.StaticText(self, wx.ID_ANY, u"Номер участника", style=wx.ALIGN_CENTER_HORIZONTAL)
+        grid_sizer_6.Add(label_2, 0, wx.ALIGN_CENTER | wx.TOP, 15)
+        grid_sizer_7 = wx.FlexGridSizer(1, 2, 0, 0)
+        grid_sizer_6.Add(grid_sizer_7, 1, 0, 0)        
+        self.text_ctrl_2 = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_PROCESS_ENTER)
+        self.text_ctrl_2.SetMinSize((300, 33))
+        grid_sizer_7.Add(self.text_ctrl_2, 0, wx.ALIGN_CENTER | wx.BOTTOM | wx.RIGHT | wx.TOP, 5)
+
+        self.button_2 = wx.Button(self, wx.ID_ANY, u"Искать")
+        self.button_2.SetMinSize((150, 50))
+        self.button_2.SetBackgroundColour(wx.Colour(204, 50, 50))
+        self.button_2.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        grid_sizer_7.Add(self.button_2, 1, wx.ALIGN_CENTER | wx.ALL, 5)
+        self.button_4 = wx.Button(self, wx.ID_ANY, u"Удалить")
+        self.button_4.SetMinSize((145, 50))
+        self.button_4.SetBackgroundColour(wx.Colour(204, 50, 50))
+        self.button_4.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        
+        grid_sizer_6.Add(self.button_4, 1, wx.ALIGN_CENTER | wx.ALL, 5)
+        
+        label_6 = wx.StaticText(self, wx.ID_ANY, u"Удаление всех записей о соревновании", style=wx.ALIGN_CENTER_HORIZONTAL)
+        label_6.SetFont(wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
+        grid_sizer_1.Add(label_6, 1, wx.ALIGN_CENTER)        
+                
         self.button_1 = wx.Button(self, wx.ID_ANY, "Удалить все записи")
         self.button_1.SetBackgroundColour(wx.RED)
         self.button_1.SetForegroundColour(wx.WHITE)
         grid_sizer_1.Add(self.button_1)
         self.button_1.Bind(wx.EVT_BUTTON, self.del_all )
+        self.button_2.Bind(wx.EVT_BUTTON, self.search_button)
         self.button_3.Bind(wx.EVT_BUTTON, self.search_button)
-        self.button_5.Bind(wx.EVT_BUTTON, self.delete_button)
+        self.button_4.Bind(wx.EVT_BUTTON, self.delete_button_participant)
+        self.button_5.Bind(wx.EVT_BUTTON, self.delete_button_competition)
 
         self.SetSizer(grid_sizer_1)
 
@@ -105,16 +129,19 @@ class Deleter(wx.Panel):
         self.choice_4.Set(getCompetitionNamesNumber(self.number))
         self.choice_4.SetSelection(0)
         
-    def delete_button(self, event):
-        if (self.choice_4.GetSelection() == -1):
-            wx.MessageBox("Выберите соревнование в поле соревнование", "Информация", wx.ICON_INFORMATION)
-            return
-        else:
-            delete_result(self.number, self.choice_4.GetStringSelection())
-            wx.MessageBox("Информация удалена", "Успех", wx.ICON_INFORMATION)
+    def delete_button_participant(self, event):
+        removeParticipant(self.number)
+        wx.MessageBox("Информация удалена", "Успех", wx.ICON_INFORMATION)
         self.text_ctrl_1.SetValue("")
         self.text_ctrl_2.SetValue("")
         self.choice_4.Set([])
+        
+    def delete_button_competition(self, event):
+        removeCompetition(self.number, self.choice_4.GetStringSelection)
+        self.text_ctrl_1.SetValue("")
+        self.text_ctrl_2.SetValue("")
+        self.choice_4.Set([])
+        
     def del_all(self, event):
         dialog = wx.MessageDialog(self, """
                         Нажатие этой кнопки удаляет все записи об этом соревновании,

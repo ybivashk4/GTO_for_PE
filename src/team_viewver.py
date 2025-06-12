@@ -38,6 +38,5 @@ class Team_viewer(wx.Panel):
         self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
         self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=200)
-        print(outputTeamsResults())
         for i in outputTeamsResults():
             self.list_ctrl_1.Append(i)

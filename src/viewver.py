@@ -17,6 +17,7 @@ from getCompetitionNames import getCompetitionNames
     * Стиль кнопок+
     * Заменить на личный зачет+
     * сделать нормально вкл/выкл всё+
+    * Сбросить чекбокс при переключении пола/категории
 """
 
 def to_roman(number:  int) -> str:
