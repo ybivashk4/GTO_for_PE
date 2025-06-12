@@ -14,6 +14,10 @@ from inputer import Inputer
 # begin wxGlade: extracode
 # end wxGlade
 
+"""
+    TODO:
+        Сделать удаление по номеру 
+"""
 
 class MainFrame(wx.Frame):
     def __init__(self, *args, **kwds):
