@@ -5,6 +5,7 @@
 #
 
 import wx
+from inputResult import inputResult
 
 # begin wxGlade: dependencies
 # end wxGlade
@@ -107,7 +108,7 @@ class Inputer(wx.Panel):
             wx.MessageBox("Выберите соревнование в поле соревнование", "Информация", wx.ICON_INFORMATION)
             return
         else:
-            some_input_func(self.choice_4.GetStringSelection(), self.text_ctrl_2.GetValue())
+            inputResult(self.choice_4.GetStringSelection(), self.text_ctrl_2.GetValue())
         self.text_ctrl_1.SetValue("")
         self.text_ctrl_2.SetValue("")
         self.choice_4.Set([])
@@ -115,8 +116,7 @@ class Inputer(wx.Panel):
 # end of class Inputer
 def some_func():
     return ["Бег", "Плаванье", "Подтягивания", "Отжимания"]
-def some_input_func(sorev, result):
-    pass
+
 class MyApp(wx.App):
     def OnInit(self):
         self.frame = Inputer(None, wx.ID_ANY, "")
