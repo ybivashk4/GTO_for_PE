@@ -32,3 +32,31 @@ def outputAllGradeResults(Grade, Sex):
     cur.close()
     con.close()
     return output_data
+
+def outputTeamsResults():
+    con = connect('../GTO.db')
+    cur = con.cursor()
+    command = f"SELECT DISTINCT Team FROM Participants"
+    cur.execute(command)
+    result = cur.fetchall()
+    teams_results = []
+    for i in result:
+        team_score = 0
+        team_result = []
+        team_result.append(i[0])
+        command = f"SELECT * FROM Participants WHERE Team = '{i[0]}'"
+        cur.execute(command)
+        team_participants = cur.fetchall()
+        for team_member in team_participants:
+            if team_member[4] == "Мужской":
+                team_member_sex = "Male"
+            else:
+                team_member_sex = "Female"
+            command = f"SELECT Сумма FROM Grade{team_member[8]}{team_member_sex} WHERE ParticipantId = {team_member[0]}"
+            cur.execute(command)
+            team_member_score = cur.fetchone()
+            if team_member_score:
+                team_score += team_member_score[0]
+        team_result.append(team_score)
+        teams_results.append(team_result)
+    return teams_results
