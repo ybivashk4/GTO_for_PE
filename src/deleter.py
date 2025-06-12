@@ -8,6 +8,7 @@ import wx
 from getCompetitionNames import getCompetitionNamesNumber
 from clearTables import clear
 from removeParticipant import removeParticipant
+from removeResult import removeResult
 # begin wxGlade: dependencies
 # end wxGlade
 
@@ -107,8 +108,8 @@ class Deleter(wx.Panel):
         self.button_1.SetForegroundColour(wx.WHITE)
         grid_sizer_1.Add(self.button_1)
         self.button_1.Bind(wx.EVT_BUTTON, self.del_all )
-        self.button_2.Bind(wx.EVT_BUTTON, self.search_button)
-        self.button_3.Bind(wx.EVT_BUTTON, self.search_button)
+        self.button_2.Bind(wx.EVT_BUTTON, self.search_button_2)
+        self.button_3.Bind(wx.EVT_BUTTON, self.search_button_1)
         self.button_4.Bind(wx.EVT_BUTTON, self.delete_button_participant)
         self.button_5.Bind(wx.EVT_BUTTON, self.delete_button_competition)
 
@@ -116,7 +117,7 @@ class Deleter(wx.Panel):
 
         self.Layout()
         # end wxGlade
-    def search_button(self, event):
+    def search_button_1(self, event):
         
         try:
             self.number = int(self.text_ctrl_1.GetValue().strip().replace(",", "."))
@@ -129,18 +130,32 @@ class Deleter(wx.Panel):
         self.choice_4.Set(getCompetitionNamesNumber(self.number))
         self.choice_4.SetSelection(0)
         
+    def search_button_2(self, event):
+        
+        try:
+            self.number = int(self.text_ctrl_2.GetValue().strip().replace(",", "."))
+        except:
+            wx.MessageBox("Введите численное значение в поле Номер участника", "Ошибка", wx.ICON_ERROR)
+            return
+        if (getCompetitionNamesNumber(self.number) == None):
+            wx.MessageBox("Нет такого участника", "Информация", wx.ICON_INFORMATION)
+            return
+        
+        
     def delete_button_participant(self, event):
         removeParticipant(self.number)
         wx.MessageBox("Информация удалена", "Успех", wx.ICON_INFORMATION)
         self.text_ctrl_1.SetValue("")
         self.text_ctrl_2.SetValue("")
         self.choice_4.Set([])
+        self.number = 0
         
     def delete_button_competition(self, event):
-        removeCompetition(self.number, self.choice_4.GetStringSelection)
+        removeResult(self.number, self.choice_4.GetStringSelection())
         self.text_ctrl_1.SetValue("")
         self.text_ctrl_2.SetValue("")
         self.choice_4.Set([])
+        self.number = 0
         
     def del_all(self, event):
         dialog = wx.MessageDialog(self, """
@@ -154,3 +169,4 @@ class Deleter(wx.Panel):
         dialog.Destroy()
         if answer == wx.ID_YES:
             clear()
+        self.number = 0
