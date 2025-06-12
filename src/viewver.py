@@ -15,7 +15,8 @@ from getCompetitionNames import getCompetitionNames
     * Добавить рамки в таблицу+
     * Добавить сообщение об ошибке в случае, если файл открыт+
     * Поменять скопировать на сохранить файл+
-    * Выбор отображаемых соревнований 
+    * Выбор отображаемых соревнований+
+    * Удаление последней записи в протоколе+
 """
 
 def to_roman(number:  int) -> str:
@@ -144,7 +145,7 @@ class Viewer(wx.Panel):
         
         
         
-        self.grid_sizer_1 = wx.FlexGridSizer(8, 1, 0, 0)
+        self.grid_sizer_1 = wx.FlexGridSizer(10, 1, 0, 0)
         
         self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=[u"2 категория", u"3 категория", u"4 категория", u"5 категория", u"6 категория", u"7 категория", u"8 категория", u"9 категория", u"10 категория", u"11 категория", u"12 категория", u"13 категория", u"14 категория", u"15 категория", u"16 категория", u"17 категория", u"18 категория"])
         self.choice_1.SetSelection(0)
@@ -159,8 +160,14 @@ class Viewer(wx.Panel):
         self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
         self.grid_sizer_1.Add(self.check_list_box_1, 0, 0, 0)
         
+        self.check_box_1 = wx.CheckBox(self, wx.ID_ANY, 'Включить/выключить всё')
+        self.grid_sizer_1.Add(self.check_box_1, 0, 0, 0)
+        
         self.button_2 = wx.Button(self, wx.ID_ANY, "Добавить в протокол")
         self.grid_sizer_1.Add(self.button_2, 0, 0, 0)
+        
+        self.button_4 = wx.Button(self, wx.ID_ANY, "Удалить последнюю запись из протокола")
+        self.grid_sizer_1.Add(self.button_4, 0, 0, 0)
         
         self.button_3 = wx.Button(self, wx.ID_ANY, "Посмотреть категорию")
         self.grid_sizer_1.Add(self.button_3, 0, 0, 0)
@@ -180,38 +187,43 @@ class Viewer(wx.Panel):
         self.button_3.Bind(wx.EVT_BUTTON, self.get_data)
         self.choice_1.Bind(wx.EVT_CHOICE, self.update_checkListBox_API)
         self.radio_box_1.Bind(wx.EVT_RADIOBOX, self.update_checkListBox_API)
+        self.button_4.Bind(wx.EVT_BUTTON, self.delete_last_record)
+        self.check_box_1.Bind(wx.EVT_CHECKBOX, self.on_off_all)
         self.SetSizer(self.grid_sizer_1)
 
         self.Layout()
         # end wxGlade
     def builder_protocol(self):
-        
-        self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
-        self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
-        for j in range(0, len(self.out_objects[0].get_normatives()), 3):
-            self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Результат", format=wx.LIST_FORMAT_LEFT, width=200)
-            self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
-                
-        self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
-        for out_category in self.out_categories:
-            for i in range(len(out_category.get_info())):
-                out = []
-                out.append(str(out_category.get_info()[i].get_place()))
-                out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
-                out.append(out_category.get_info()[i].get_date())
-                out.append(out_category.get_info()[i].get_number())
-                out.append(out_category.get_info()[i].get_team())
-                for j in range(0, len(out_category.get_info()[i].get_normatives())):
-                    if (j == 0 or j % 3 == 0):
-                        continue
-                    out.append(str(out_category.get_info()[i].get_normatives()[j]))
-                out.append(str(out_category.get_info()[i].get_sum()))
-                
-                self.list_ctrl_1.Append(out)
-            
+        try:
+            self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
+            self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
+            self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
+            self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
+            self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
+            for j in range(0, len(self.out_objects[0].get_normatives()), 3):
+                self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Результат", format=wx.LIST_FORMAT_LEFT, width=200)
+                self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
+                    
+            self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
+            for out_category in self.out_categories:
+                for i in range(len(out_category.get_info())):
+                    out = []
+                    out.append(str(out_category.get_info()[i].get_place()))
+                    out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
+                    out.append(out_category.get_info()[i].get_date())
+                    out.append(out_category.get_info()[i].get_number())
+                    out.append(out_category.get_info()[i].get_team())
+                    for j in range(0, len(out_category.get_info()[i].get_normatives())):
+                        if (j == 0 or j % 3 == 0):
+                            continue
+                        out.append(str(out_category.get_info()[i].get_normatives()[j]))
+                    out.append(str(out_category.get_info()[i].get_sum()))
+                    
+                    self.list_ctrl_1.Append(out)
+        except:
+            wx.MessageBox("Нет данных по данной ступени", "Сообщение", wx.OK | wx.ICON_INFORMATION)
+            self.list_ctrl_1.DeleteAllColumns()
+            self.list_ctrl_1.DeleteAllItems()
     def builder(self):
         "Поставить трай эксепт в случае отсутствия записи в категории"
         try:
@@ -441,14 +453,20 @@ class Viewer(wx.Panel):
             wx.MessageBox("Файл уже открыт, закройте его", "Ошибка", wx.OK | wx.ICON_ERROR)  
                 
     def get_data_protocol(self, event):
-        self.create_out_object()
-        # Строительство новых данных
-        self.builder_protocol()
+        try:
+            self.create_out_object()
+            # Строительство новых данных
+            self.builder_protocol()
+        except:
+            wx.MessageBox("Произошла ошибка", "Неизвестная ошибка", wx.OK | wx.ICON_ERROR)
 # end of class Viewer
     def get_data(self, event):
-        self.create_out_object()
-        self.builder()
-        
+        try:
+            self.create_out_object()
+            self.builder()
+        except:
+            wx.MessageBox("Произошла ошибка", "Неизвестная ошибка", wx.OK | wx.ICON_ERROR)
+            
     def create_out_object(self):
         #Удаление старых записей
         self.list_ctrl_1.DeleteAllColumns()
@@ -482,6 +500,25 @@ class Viewer(wx.Panel):
         
     def update_checkListBox_API(self, event):
         self.update_checkListBox()
+        
+    def delete_last_record(self, event):
+        try:
+            self.out_categories.pop()
+            # Удаление старых записей
+            self.list_ctrl_1.DeleteAllColumns()
+            self.list_ctrl_1.DeleteAllItems()
+            self.builder_protocol()
+        except:
+            wx.MessageBox("В протоколе нет записей", "Информация", wx.ICON_INFORMATION | wx.OK)
+            
+    def on_off_all(self, event):
+        category = self.choice_1.GetSelection()+2
+        sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())        
+        self.normatives = getCompetitionNames(category, sex)
+        if all(self.check_list_box_1.IsChecked(i) for i in range(len(self.normatives))):
+            self.check_list_box_1.SetCheckedItems([])
+        else:
+            self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
 class MyApp(wx.App):
     def OnInit(self):
         self.frame = Viewer(None, wx.ID_ANY, "")
