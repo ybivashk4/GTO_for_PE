@@ -8,5 +8,3 @@ def removeParticipant(Number):
     con.commit()
     cur.close()
     con.close()
-
-removeParticipant(1)
