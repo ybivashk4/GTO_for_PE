@@ -12,7 +12,7 @@ from clearTables import clear
 # end wxGlade
 
 # begin wxGlade: extracode
-# end wxGlade
+# end wxGlade 
 
 class Input_data():
     def __init__(self, number, sorev, result) -> None:
