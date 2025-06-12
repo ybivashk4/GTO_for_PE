@@ -5,18 +5,14 @@
 #
 
 import wx
-from inputResult import inputResult
 from getCompetitionNames import getCompetitionNamesNumber
+from clearTables import clear
+
 # begin wxGlade: dependencies
 # end wxGlade
 
 # begin wxGlade: extracode
 # end wxGlade
-
-"""
-    TODO:
-        Вместо сообщения о успешном поиске выбор по дефолту в чойзере+
-"""
 
 class Input_data():
     def __init__(self, number, sorev, result) -> None:
@@ -32,17 +28,17 @@ class Input_data():
     def get_result(self):
         return self.result
 
-class Inputer(wx.Panel):
+class Deleter(wx.Panel):
     def __init__(self, parent):
-        super(Inputer, self).__init__(parent) 
+        super(Deleter, self).__init__(parent) 
         self.number = 0
-        # begin wxGlade: Inputer.__init__
+        # begin wxGlade: Deleter.__init__
         self.SetSize((600, 550))
         self.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DDKSHADOW))
         self.SetFont(wx.Font(14, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
 
-        grid_sizer_1 = wx.FlexGridSizer(3, 1, 30, 0)
+        grid_sizer_1 = wx.FlexGridSizer(4, 1, 30, 0)
 
         grid_sizer_2 = wx.FlexGridSizer(2, 1, 10, 0)
         grid_sizer_1.Add(grid_sizer_2, 1, wx.LEFT | wx.RIGHT, 30)
@@ -78,24 +74,19 @@ class Inputer(wx.Panel):
         self.choice_4.SetMinSize((458, 33))
         grid_sizer_4.Add(self.choice_4, 0, wx.BOTTOM, 30)
 
-        label_4 = wx.StaticText(self, wx.ID_ANY, u"Результат")
-        grid_sizer_4.Add(label_4, 0, wx.ALIGN_CENTER, 0)
-
-        grid_sizer_7 = wx.FlexGridSizer(1, 2, 0, 0)
-        grid_sizer_4.Add(grid_sizer_7, 1, wx.EXPAND | wx.RIGHT, 0)
-
-        self.text_ctrl_2 = wx.TextCtrl(self, wx.ID_ANY, "")
-        self.text_ctrl_2.SetMinSize((300, 33))
-        self.text_ctrl_2.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DHIGHLIGHT))
-        grid_sizer_7.Add(self.text_ctrl_2, 0, wx.ALIGN_CENTER | wx.BOTTOM | wx.RIGHT | wx.TOP, 5)
-
-        self.button_5 = wx.Button(self, wx.ID_ANY, u"Внести")
+        self.button_5 = wx.Button(self, wx.ID_ANY, u"Удалить")
         self.button_5.SetMinSize((145, 50))
         self.button_5.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_5.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
-        grid_sizer_7.Add(self.button_5, 1, wx.ALIGN_CENTER | wx.ALL, 5)
+        grid_sizer_4.Add(self.button_5, 1, wx.ALIGN_CENTER | wx.ALL, 5)
+        
+        self.button_1 = wx.Button(self, wx.ID_ANY, "Удалить все записи")
+        self.button_1.SetBackgroundColour(wx.RED)
+        self.button_1.SetForegroundColour(wx.WHITE)
+        grid_sizer_1.Add(self.button_1)
+        self.button_1.Bind(wx.EVT_BUTTON, self.del_all )
         self.button_3.Bind(wx.EVT_BUTTON, self.search_button)
-        self.button_5.Bind(wx.EVT_BUTTON, self.input_button)
+        self.button_5.Bind(wx.EVT_BUTTON, self.delete_button)
 
         self.SetSizer(grid_sizer_1)
 
@@ -113,15 +104,26 @@ class Inputer(wx.Panel):
             return
         self.choice_4.Set(getCompetitionNamesNumber(self.number))
         self.choice_4.SetSelection(0)
-    def input_button(self, event):
+        
+    def delete_button(self, event):
         if (self.choice_4.GetSelection() == -1):
             wx.MessageBox("Выберите соревнование в поле соревнование", "Информация", wx.ICON_INFORMATION)
             return
         else:
-            inputResult(self.number, self.choice_4.GetStringSelection(), self.text_ctrl_2.GetValue())
-            wx.MessageBox("Информация внесена", "Успех", wx.ICON_INFORMATION)
+            delete_result(self.number, self.choice_4.GetStringSelection())
+            wx.MessageBox("Информация удалена", "Успех", wx.ICON_INFORMATION)
         self.text_ctrl_1.SetValue("")
         self.text_ctrl_2.SetValue("")
         self.choice_4.Set([])
+    def del_all(self, event):
+        dialog = wx.MessageDialog(self, """
+                        Нажатие этой кнопки удаляет все записи об этом соревновании,
+                        рекомендуем нажимать эту кнопку только в том случае,
+                        если соревнование закончилось.
+                        Вы уверены, что хотите удалить все данные ?
+                        """, "ВНИМАНИЕ!", wx.YES_NO | wx.ICON_WARNING | wx.CANCEL)
         
-
+        answer = dialog.ShowModal()
+        dialog.Destroy()
+        if answer == wx.ID_YES:
+            clear()
