@@ -13,6 +13,11 @@ from getCompetitionNames import getCompetitionNamesNumber
 # begin wxGlade: extracode
 # end wxGlade
 
+"""
+    TODO:
+        Вместо сообщения о успешном поиске выбор по дефолту в чойзере+
+"""
+
 class Input_data():
     def __init__(self, number, sorev, result) -> None:
         self.number = number
@@ -107,7 +112,7 @@ class Inputer(wx.Panel):
             wx.MessageBox("Нет такого участника", "Информация", wx.ICON_INFORMATION)
             return
         self.choice_4.Set(getCompetitionNamesNumber(self.number))
-        wx.MessageBox("В соревнованиях появился выбор", "Успех", wx.ICON_INFORMATION)
+        self.choice_4.SetSelection(0)
     def input_button(self, event):
         if (self.choice_4.GetSelection() == -1):
             wx.MessageBox("Выберите соревнование в поле соревнование", "Информация", wx.ICON_INFORMATION)
