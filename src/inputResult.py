@@ -15,6 +15,8 @@ def inputResult(Number, Competition, Result):
     command = f"SELECT Id, {standarts_table_name}.'{Competition}' FROM {standarts_table_name}"
     cur.execute(command)
     normatives = cur.fetchall()
+    if ',' in Result:
+        Result = Result.replace(',', '.')
     if ':' in normatives[99][1]:
         last_not_none = 0
         result_time = datetime.strptime(Result, '%M:%S.%f').time()
