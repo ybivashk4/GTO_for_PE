@@ -1,10 +1,7 @@
 import wx
-import wx
-import tempfile
 import openpyxl
-import pyperclip
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-from outputResults import outputAllGradeResults
+from outputResults import outputAllGradeResults, outputTeamsResults
 from getCompetitionNames import getCompetitionNames
 """
     TODO:
@@ -17,9 +14,9 @@ from getCompetitionNames import getCompetitionNames
     * Поменять скопировать на сохранить файл+
     * Выбор отображаемых соревнований+
     * Удаление последней записи в протоколе+
-    * Стиль кнопок
-    * Заменить на личный зачет
-    * сделать нормально вкл/выкл всё
+    * Стиль кнопок+
+    * Заменить на личный зачет+
+    * сделать нормально вкл/выкл всё+
 """
 
 def to_roman(number:  int) -> str:
@@ -425,7 +422,7 @@ class Viewer(wx.Panel):
             ws2[f'B{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
             ws2[f'C{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
             cur_row += 1
-            example_team_out = [["1", "Сургут", "20"], ["2", "НеСургут", "10"]]
+            example_team_out = outputTeamsResults()
             
             for i in example_team_out:
                 ws2.append(i)
@@ -536,15 +533,3 @@ class Viewer(wx.Panel):
         else:
             self.check_list_box_1.SetCheckedItems([])
             
-class MyApp(wx.App):
-    def OnInit(self):
-        self.frame = Viewer(None, wx.ID_ANY, "")
-        self.SetTopWindow(self.frame)
-        self.frame.Show()
-        return True
-
-if __name__ == "__main__":
-    
-    app = MyApp(0)
-    app.MainLoop()
- 
