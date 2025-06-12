@@ -511,6 +511,7 @@ class Viewer(wx.Panel):
         self.normatives = getCompetitionNames(category, sex)
         self.check_list_box_1.SetItems(self.normatives)
         self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
+        self.check_box_1.SetValue(True)
         
     def update_checkListBox_API(self, event):
         self.update_checkListBox()
