@@ -4,8 +4,8 @@ import tempfile
 import openpyxl
 import pyperclip
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
-
-
+from outputResults import outputAllGradeResults
+from getCompetitionNames import getCompetitionNames
 """
     TODO:
     * Сделать цвет у строчки с категорией+
@@ -142,41 +142,45 @@ class Viewer(wx.Panel):
         super(Viewer, self).__init__(parent) 
         self.SetSize((600, 800))
         
-        normatives = ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4, "Лыжи", 15, 4]
         
-        grid_sizer_1 = wx.FlexGridSizer(8, 1, 0, 0)
+        
+        self.grid_sizer_1 = wx.FlexGridSizer(8, 1, 0, 0)
         
         self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=[u"2 категория", u"3 категория", u"4 категория", u"5 категория", u"6 категория", u"7 категория", u"8 категория", u"9 категория", u"10 категория", u"11 категория", u"12 категория", u"13 категория", u"14 категория", u"15 категория", u"16 категория", u"17 категория", u"18 категория"])
         self.choice_1.SetSelection(0)
-        grid_sizer_1.Add(self.choice_1, 0, 0, 0)
+        self.grid_sizer_1.Add(self.choice_1, 0, 0, 0)
 
         self.radio_box_1 = wx.RadioBox(self, wx.ID_ANY, "", choices=[u"Мужской", u"Женский"], majorDimension=1, style=wx.RA_SPECIFY_ROWS)
         self.radio_box_1.SetSelection(0)
-        grid_sizer_1.Add(self.radio_box_1, 0, 0, 0)
+        self.grid_sizer_1.Add(self.radio_box_1, 0, 0, 0)
         
-        self.check_list_box_1 = wx.CheckListBox(self, wx.ID_ANY, choices=[normatives[i] for i in range(0, len(normatives), 3)])
-        grid_sizer_1.Add(self.check_list_box_1, 0, 0, 0)
+        self.normatives = getCompetitionNames(2, "Мужской")
+        self.check_list_box_1 = wx.CheckListBox(self, wx.ID_ANY, choices=self.normatives)
+        self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
+        self.grid_sizer_1.Add(self.check_list_box_1, 0, 0, 0)
         
         self.button_2 = wx.Button(self, wx.ID_ANY, "Добавить в протокол")
-        grid_sizer_1.Add(self.button_2, 0, 0, 0)
+        self.grid_sizer_1.Add(self.button_2, 0, 0, 0)
         
         self.button_3 = wx.Button(self, wx.ID_ANY, "Посмотреть категорию")
-        grid_sizer_1.Add(self.button_3, 0, 0, 0)
+        self.grid_sizer_1.Add(self.button_3, 0, 0, 0)
         
         self.list_ctrl_1 = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_HRULES | wx.LC_REPORT | wx.LC_VRULES)
         self.list_ctrl_1.SetMinSize(wx.Size(10000, 400))
         self.list_ctrl_1.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         self.list_ctrl_1.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         
-        grid_sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
+        self.grid_sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
         self.button_1 = wx.Button(self, wx.ID_ANY, "Сохранить протокол")
-        grid_sizer_1.Add(self.button_1, 0, 0, 0)
+        self.grid_sizer_1.Add(self.button_1, 0, 0, 0)
         
         
         self.button_1.Bind(wx.EVT_BUTTON, self.save_as_excel)
         self.button_2.Bind(wx.EVT_BUTTON, self.get_data_protocol)
         self.button_3.Bind(wx.EVT_BUTTON, self.get_data)
-        self.SetSizer(grid_sizer_1)
+        self.choice_1.Bind(wx.EVT_CHOICE, self.update_checkListBox_API)
+        self.radio_box_1.Bind(wx.EVT_RADIOBOX, self.update_checkListBox_API)
+        self.SetSizer(self.grid_sizer_1)
 
         self.Layout()
         # end wxGlade
@@ -210,31 +214,36 @@ class Viewer(wx.Panel):
             
     def builder(self):
         "Поставить трай эксепт в случае отсутствия записи в категории"
-        self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
-        self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
-        for j in range(0, len(self.out_objects[0].get_normatives()), 3):
-            self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Результат", format=wx.LIST_FORMAT_LEFT, width=200)
-            self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
+        try:
+            self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
+            self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
+            self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
+            self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
+            self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
+            for j in range(0, len(self.out_objects[0].get_normatives()), 3):
+                self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Результат", format=wx.LIST_FORMAT_LEFT, width=200)
+                self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
+                    
+            self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
+            for i in self.out_objects:
+                out = []
+                out.append(str(i.get_place()))
+                out.append(i.get_surname() + " " + i.get_name() + " " + i.get_thirdname())
+                out.append(i.get_date())
+                out.append(i.get_number())
+                out.append(i.get_team())
+                for j in range(0, len(i.get_normatives())):
+                    if (j == 0 or j % 3 == 0):
+                        continue
+                    out.append(str(i.get_normatives()[j]))
+                out.append(str(i.get_sum()))
                 
-        self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
-        for i in self.out_objects:
-            out = []
-            out.append(str(i.get_place()))
-            out.append(i.get_surname() + " " + i.get_name() + " " + i.get_thirdname())
-            out.append(i.get_date())
-            out.append(i.get_number())
-            out.append(i.get_team())
-            for j in range(0, len(i.get_normatives())):
-                if (j == 0 or j % 3 == 0):
-                    continue
-                out.append(str(i.get_normatives()[j]))
-            out.append(str(i.get_sum()))
+                self.list_ctrl_1.Append(out)
+        except:
+            wx.MessageBox("Нет данных по данной ступени", "Сообщение", wx.OK | wx.ICON_INFORMATION)
+            self.list_ctrl_1.DeleteAllColumns()
+            self.list_ctrl_1.DeleteAllItems()
             
-            self.list_ctrl_1.Append(out)
-                
     def save_as_excel(self, event):
         try:
             # Создаем временный Excel файл
@@ -270,7 +279,7 @@ class Viewer(wx.Panel):
                 normatives_headers = []
                 for i in out_category.get_normatives_without_results():
                     normatives_headers.append(i + " Результат")
-                    normatives_headers.append(i + " Баллы")
+                    normatives_headers.append("Баллы")
                 headers = ["Место", "ФИО","Дата рождения", "Нагрудн. Номер", "Команда" ] + normatives_headers + ["Сумма очков"]
                 ws.append(headers)
                 # Увеличение размера заголовков
@@ -349,7 +358,7 @@ class Viewer(wx.Panel):
             
             for col in range(1, 1000):
                 col_letter = openpyxl.utils.get_column_letter(col)
-                ws.column_dimensions[col_letter].width = 20
+                ws.column_dimensions[col_letter].width = 25
             ws.column_dimensions['B'].width = 60
             ws.column_dimensions['E'].width = 70
             
@@ -432,32 +441,47 @@ class Viewer(wx.Panel):
             wx.MessageBox("Файл уже открыт, закройте его", "Ошибка", wx.OK | wx.ICON_ERROR)  
                 
     def get_data_protocol(self, event):
+        self.create_out_object()
+        # Строительство новых данных
+        self.builder_protocol()
+# end of class Viewer
+    def get_data(self, event):
+        self.create_out_object()
+        self.builder()
+        
+    def create_out_object(self):
         #Удаление старых записей
         self.list_ctrl_1.DeleteAllColumns()
         self.list_ctrl_1.DeleteAllItems()
+        
+        # Удаление соревнований, которые не выбраны в программе
+        white_list = self.check_list_box_1.GetCheckedStrings()
         
         # Для запроса в базу
         category = self.choice_1.GetSelection()+2
         sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())
         self.out_objects.clear()
         # Пример формата получаемых данных
-        self.out_objects.append(Out_object(1, "Beltyukov","Mikhail", "Olegovich", "20.09.2004", "1", "Сургут", ["Бег", 20, 5, "Плаванье", 10, 3, "Лыжи", 15, 4], 20))
-        self.out_objects.append(Out_object(2, "Beltyukov2","Mikhail2",  "Olegovich2", "20.09.2000", "2", "НеСургут", ["Бег", 202, 52, "Плаванье", 102, 32, "Лыжи", 152, 42], 10))
+        for i in outputAllGradeResults(category, sex):
+            filtred_norrmatives = []
+            for j in range(0, len(i[7]), 3):
+                if i[7][j] in white_list:
+                    filtred_norrmatives.append(i[7][j])
+                    filtred_norrmatives.append(i[7][j+1])
+                    filtred_norrmatives.append(i[7][j+2])
+                    
+            self.out_objects.append(Out_object(i[0], i[1],i[2], i[3], i[4], i[5], i[6], filtred_norrmatives, i[8]))
         self.out_categories.append(Out_category(self.out_objects, category, sex))
-        # Строительство новых данных
-        self.builder_protocol()
-# end of class Viewer
-    def get_data(self, event):
-        #Удаление старых записей
-        self.list_ctrl_1.DeleteAllColumns()
-        self.list_ctrl_1.DeleteAllItems()
-        self.out_objects.clear()
-        # Пример формата получаемых данных
+    
+    def update_checkListBox(self):
+        category = self.choice_1.GetSelection()+2
+        sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())
+        self.normatives = getCompetitionNames(category, sex)
+        self.check_list_box_1.SetItems(self.normatives)
+        self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
         
-        for i in outputAllGradeResaults(self.choice_1.GetSelection()+2, self.radio_box_1.GetStringSelection()):
-            self.out_objects.append(Out_object(i[0], i[1],i[2], i[3], i[4], i[5], i[6], i[7], i[8]))
-        self.builder()
-
+    def update_checkListBox_API(self, event):
+        self.update_checkListBox()
 class MyApp(wx.App):
     def OnInit(self):
         self.frame = Viewer(None, wx.ID_ANY, "")
