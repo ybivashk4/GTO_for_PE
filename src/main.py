@@ -28,7 +28,7 @@ class MainFrame(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((1000, 900))
-        self.SetTitle("Помошник_ГТО")
+        self.SetTitle("Помощник ГТО")
 
         grid_sizer_1 = wx.FlexGridSizer(1, 1, 10, 10)
 
@@ -37,14 +37,14 @@ class MainFrame(wx.Frame):
         
         self.notebook_1.AddPage(Viewer(self.notebook_1), u"Личный зачет")
 
+        self.notebook_1.AddPage(Team_viewer(self.notebook_1), u"Командный зачет")
+
         self.notebook_1.AddPage(Inputer(self.notebook_1), u"Ввод")
 
         self.notebook_1.AddPage(Registration(self.notebook_1), u"Регистрация")
 
         self.notebook_1.AddPage(Deleter(self.notebook_1), u"Удаление")
-        
-        self.notebook_1.AddPage(Team_viewer(self.notebook_1), u"Командный зачет")
-        
+
         self.SetSizer(grid_sizer_1)
 
         self.Layout()
