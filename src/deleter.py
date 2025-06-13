@@ -135,8 +135,6 @@ class Deleter(wx.Panel):
         if (getCompetitionNamesNumber(self.number) == None):
             wx.MessageBox("Нет такого участника", "Информация", wx.ICON_INFORMATION)
             return
-        self.choice_4.Set(getCompetitionNamesNumber(self.number))
-        self.choice_4.SetSelection(0)
         removeParticipant(self.number)
         wx.MessageBox("Информация удалена", "Успех", wx.ICON_INFORMATION)
         self.text_ctrl_1.SetValue("")
