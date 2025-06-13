@@ -87,17 +87,11 @@ class Deleter(wx.Panel):
         self.text_ctrl_2.SetMinSize((300, 33))
         grid_sizer_7.Add(self.text_ctrl_2, 0, wx.ALIGN_CENTER | wx.BOTTOM | wx.RIGHT | wx.TOP, 5)
 
-        self.button_2 = wx.Button(self, wx.ID_ANY, u"Искать")
+        self.button_2 = wx.Button(self, wx.ID_ANY, u"Удалить")
         self.button_2.SetMinSize((150, 50))
         self.button_2.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_2.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         grid_sizer_7.Add(self.button_2, 1, wx.ALIGN_CENTER | wx.ALL, 5)
-        self.button_4 = wx.Button(self, wx.ID_ANY, u"Удалить")
-        self.button_4.SetMinSize((145, 50))
-        self.button_4.SetBackgroundColour(wx.Colour(204, 50, 50))
-        self.button_4.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
-        
-        grid_sizer_6.Add(self.button_4, 1, wx.ALIGN_CENTER | wx.ALL, 5)
         
         label_6 = wx.StaticText(self, wx.ID_ANY, u"Удаление всех записей о соревновании", style=wx.ALIGN_CENTER_HORIZONTAL)
         label_6.SetFont(wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
@@ -108,9 +102,8 @@ class Deleter(wx.Panel):
         self.button_1.SetForegroundColour(wx.WHITE)
         grid_sizer_1.Add(self.button_1)
         self.button_1.Bind(wx.EVT_BUTTON, self.del_all )
-        self.button_2.Bind(wx.EVT_BUTTON, self.search_button_2)
+        self.button_2.Bind(wx.EVT_BUTTON, self.delete_button_participant)
         self.button_3.Bind(wx.EVT_BUTTON, self.search_button_1)
-        self.button_4.Bind(wx.EVT_BUTTON, self.delete_button_participant)
         self.button_5.Bind(wx.EVT_BUTTON, self.delete_button_competition)
 
         self.SetSizer(grid_sizer_1)
@@ -130,8 +123,10 @@ class Deleter(wx.Panel):
         self.choice_4.Set(getCompetitionNamesNumber(self.number))
         self.choice_4.SetSelection(0)
         
-    def search_button_2(self, event):
+
         
+        
+    def delete_button_participant(self, event):
         try:
             self.number = int(self.text_ctrl_2.GetValue().strip().replace(",", "."))
         except:
@@ -140,9 +135,8 @@ class Deleter(wx.Panel):
         if (getCompetitionNamesNumber(self.number) == None):
             wx.MessageBox("Нет такого участника", "Информация", wx.ICON_INFORMATION)
             return
-        
-        
-    def delete_button_participant(self, event):
+        self.choice_4.Set(getCompetitionNamesNumber(self.number))
+        self.choice_4.SetSelection(0)
         removeParticipant(self.number)
         wx.MessageBox("Информация удалена", "Успех", wx.ICON_INFORMATION)
         self.text_ctrl_1.SetValue("")
@@ -151,6 +145,9 @@ class Deleter(wx.Panel):
         self.number = 0
         
     def delete_button_competition(self, event):
+        if self.choice_4.GetStringSelection() == None or self.number == 0:
+            wx.MessageBox("Не хватает данных", "Ошибка", wx.ICON_ERROR)
+            return
         removeResult(self.number, self.choice_4.GetStringSelection())
         self.text_ctrl_1.SetValue("")
         self.text_ctrl_2.SetValue("")
