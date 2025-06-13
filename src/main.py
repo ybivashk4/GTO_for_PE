@@ -32,7 +32,7 @@ class MainFrame(wx.Frame):
 
         grid_sizer_1 = wx.FlexGridSizer(1, 1, 10, 10)
 
-        self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style=wx.NB_FIXEDWIDTH | wx.NB_TOP)
+        self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style= wx.NB_TOP)
         grid_sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
         
         self.notebook_1.AddPage(Viewer(self.notebook_1), u"Личный зачет")
@@ -56,6 +56,7 @@ class MainFrame(wx.Frame):
 class MyApp(wx.App):
     def OnInit(self):
         self.frame = MainFrame(None, wx.ID_ANY, "")
+        self.frame.SetIcon(wx.Icon("GTO_ICON.png"))
         self.SetTopWindow(self.frame)
         self.frame.Show()
         return True
