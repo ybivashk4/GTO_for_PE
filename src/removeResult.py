@@ -20,5 +20,14 @@ def removeResult(Number, Competition):
     command = f"UPDATE {table_name} SET 'Соревнование{competition_number}' = NULL, 'Балл{competition_number}' = 0 WHERE ParticipantId = {id}"
     cur.execute(command)
     con.commit()
+    command = f"SELECT * FROM {table_name} WHERE ParticipantId = (SELECT Id FROM Participants WHERE ParticipantNumber = {Number})"
+    cur.execute(command)
+    participant_result = cur.fetchone()
+    total_score = 0
+    for i in range(3, len(participant_result) - 1, 2):
+        total_score += participant_result[i]
+    command = f"UPDATE {table_name} SET Сумма = {total_score} WHERE ParticipantId = (SELECT Id FROM Participants WHERE ParticipantNumber = {Number})"
+    cur.execute(command)
+    con.commit()
     cur.close()
     con.close()
