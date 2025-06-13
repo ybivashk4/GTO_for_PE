@@ -535,3 +535,4 @@ class Viewer(wx.Panel):
         else:
             self.check_list_box_1.SetCheckedItems([])
             
+ 
