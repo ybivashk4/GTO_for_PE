@@ -214,10 +214,18 @@ class Viewer(wx.Panel):
             self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
             self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
             self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
-            for j in range(0, len(self.out_objects[0].get_normatives()), 3):
-                self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Результат", format=wx.LIST_FORMAT_LEFT, width=200)
-                self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
-                    
+            # Добавить вывод всех нормативов
+            noramtives_headers = []
+            for i in self.out_categories:
+                black_list = []
+                for j in range(0, len(i.get_info()[0].get_normatives()), 3):
+                    if (i.get_normatives()[j] not in black_list):
+                        noramtives_headers.append(i.get_info()[0].get_normatives()[j] + " Результат")
+                        noramtives_headers.append(i.get_info()[0].get_normatives()[j] + " Баллы")
+                        black_list.append(i.get_info()[0].get_normatives()[j])
+
+            for i in noramtives_headers:
+                self.list_ctrl_1.AppendColumn(i, format=wx.LIST_FORMAT_LEFT, width=200)
             self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
             for out_category in self.out_categories:
                 for i in range(len(out_category.get_info())):
@@ -227,17 +235,30 @@ class Viewer(wx.Panel):
                     out.append(out_category.get_info()[i].get_date())
                     out.append(out_category.get_info()[i].get_number())
                     out.append(out_category.get_info()[i].get_team())
+                    count_noramtives = 0
+                    is_find_normative = False
                     for j in range(0, len(out_category.get_info()[i].get_normatives())):
-                        if (j == 0 or j % 3 == 0):
+                        if (j % 3 == 0):
                             continue
+                        while (not (is_find_normative) and j % 3 == 1 and out_category.get_info()[i].get_normatives()[j-1] != noramtives_headers[count_noramtives].replace(" Результат", "")):
+                            out.append("Не участвовал")
+                            out.append("0")
+                            count_noramtives += 2
+                            is_find_normative = True
+                            
                         out.append(str(out_category.get_info()[i].get_normatives()[j]))
+                        count_noramtives+=1
+                    while (count_noramtives < len(noramtives_headers)):
+                        out.append("Не участвовал")
+                        out.append("0")
+                        count_noramtives += 2
                     out.append(str(out_category.get_info()[i].get_sum()))
-                    
+
                     self.list_ctrl_1.Append(out)
         except:
             wx.MessageBox("Нет данных по данной ступени", "Сообщение", wx.OK | wx.ICON_INFORMATION)
-            self.list_ctrl_1.DeleteAllColumns()
-            self.list_ctrl_1.DeleteAllItems()
+            # self.list_ctrl_1.DeleteAllColumns()
+            # self.list_ctrl_1.DeleteAllItems()
     def builder(self):
         "Поставить трай эксепт в случае отсутствия записи в категории"
         try:
@@ -251,20 +272,24 @@ class Viewer(wx.Panel):
                 self.list_ctrl_1.AppendColumn(self.out_objects[0].get_normatives()[j] + " Баллы", format=wx.LIST_FORMAT_LEFT, width=200)
                     
             self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
-            for i in self.out_objects:
+
+            out_category = self.out_categories[len(self.out_categories)-1]
+            for i in range(len(out_category.get_info())):
                 out = []
-                out.append(str(i.get_place()))
-                out.append(i.get_surname() + " " + i.get_name() + " " + i.get_thirdname())
-                out.append(i.get_date())
-                out.append(i.get_number())
-                out.append(i.get_team())
-                for j in range(0, len(i.get_normatives())):
+                out.append(str(out_category.get_info()[i].get_place()))
+                out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
+                out.append(out_category.get_info()[i].get_date())
+                out.append(out_category.get_info()[i].get_number())
+                out.append(out_category.get_info()[i].get_team())
+                for j in range(0, len(out_category.get_info()[i].get_normatives())):
                     if (j == 0 or j % 3 == 0):
                         continue
-                    out.append(str(i.get_normatives()[j]))
-                out.append(str(i.get_sum()))
-                
+                    out.append(str(out_category.get_info()[i].get_normatives()[j]))
+                out.append(str(out_category.get_info()[i].get_sum()))
+
                 self.list_ctrl_1.Append(out)
+                
+            self.out_categories.pop()
         except:
             wx.MessageBox("Нет данных по данной ступени", "Сообщение", wx.OK | wx.ICON_INFORMATION)
             self.list_ctrl_1.DeleteAllColumns()
@@ -493,6 +518,7 @@ class Viewer(wx.Panel):
         category = self.choice_1.GetSelection()+2
         sex = self.radio_box_1.GetString(self.radio_box_1.GetSelection())
         self.out_objects.clear()
+        
         # Пример формата получаемых данных
         for i in outputAllGradeResults(category, sex):
             filtred_norrmatives = []
@@ -503,7 +529,9 @@ class Viewer(wx.Panel):
                     filtred_norrmatives.append(i[7][j+2])
                     
             self.out_objects.append(Out_object(i[0], i[1],i[2], i[3], i[4], i[5], i[6], filtred_norrmatives, i[8]))
-        self.out_categories.append(Out_category(self.out_objects, category, sex))
+        temp_out_object = [i for i in self.out_objects]
+        self.out_categories.append(Out_category(temp_out_object, category, sex))
+        
     
     def update_checkListBox(self):
         category = self.choice_1.GetSelection()+2
