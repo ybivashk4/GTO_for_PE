@@ -146,7 +146,7 @@ class Viewer(wx.Panel):
         self.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
         
         
-        self.grid_sizer_1 = wx.FlexGridSizer(10, 1, 0, 0)
+        self.grid_sizer_1 = wx.FlexGridSizer(11, 1, 0, 0)
         
         self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=[u"2 ступень", u"3 ступень", u"4 ступень", u"5 ступень", u"6 ступень", u"7 ступень", u"8 ступень", u"9 ступень", u"10 ступень", u"11 ступень", u"12 ступень", u"13 ступень", u"14 ступень", u"15 ступень", u"16 ступень", u"17 ступень", u"18 ступень"])
         self.choice_1.SetSelection(0)
@@ -196,6 +196,12 @@ class Viewer(wx.Panel):
         self.grid_sizer_1.Add(self.button_1, 0, 0, 0)
         
         
+        self.button_5 = wx.Button(self, wx.ID_ANY, "Скопировать данные ступени")
+        self.button_5.SetBackgroundColour(wx.Colour(204, 50, 50))
+        self.button_5.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        self.button_5.SetMinSize((350, 25))
+        self.grid_sizer_1.Add(self.button_5, 0, 0, 0)
+        
         self.button_1.Bind(wx.EVT_BUTTON, self.save_as_excel)
         self.button_2.Bind(wx.EVT_BUTTON, self.get_data_protocol)
         self.button_3.Bind(wx.EVT_BUTTON, self.get_data)
@@ -203,6 +209,7 @@ class Viewer(wx.Panel):
         self.radio_box_1.Bind(wx.EVT_RADIOBOX, self.update_checkListBox_API)
         self.button_4.Bind(wx.EVT_BUTTON, self.delete_last_record)
         self.check_box_1.Bind(wx.EVT_CHECKBOX, self.on_off_all)
+        self.button_5.Bind(wx.EVT_BUTTON, self.copy_to_clipboard)
         self.SetSizer(self.grid_sizer_1)
 
         self.Layout()
@@ -562,5 +569,35 @@ class Viewer(wx.Panel):
             self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
         else:
             self.check_list_box_1.SetCheckedItems([])
-            
- 
+    def copy_to_clipboard(self, event):
+        row_count = self.list_ctrl_1.GetItemCount()
+        col_count = self.list_ctrl_1.GetColumnCount()
+        all_items = []
+        
+        for row in range(row_count):
+            row_data = []
+            for col in range(col_count):
+                row_data.append(self.list_ctrl_1.GetItemText(row, col))
+            all_items.append("\t".join(row_data))
+
+        # Копируем в буфер обмена
+
+        if all_items:
+            clipboard_data = wx.TextDataObject()
+            clipboard_data.SetText("\n".join(all_items))
+            if wx.TheClipboard.Open():
+                wx.TheClipboard.SetData(clipboard_data)
+                wx.TheClipboard.Close()
+        for row in range(row_count):
+            row_data = []
+            for col in range(col_count):
+                row_data.append(self.list_ctrl_1.GetItemText(row, col))
+            all_items.append("\t".join(row_data))
+        if all_items:
+            clipboard_data = wx.TextDataObject()
+            clipboard_data.SetText("\n".join(all_items))
+            if wx.TheClipboard.Open():
+                wx.TheClipboard.SetData(clipboard_data)
+                wx.TheClipboard.Close()
+        wx.MessageBox("Данные скопированы в буфер обмена!", "Успех", wx.OK | wx.ICON_INFORMATION)  
+        
