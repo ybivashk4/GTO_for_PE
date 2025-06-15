@@ -11,7 +11,7 @@ def outputAllGradeResults(Grade, Sex):
     result = cur.fetchall()
     output_data = []
     for ind, i in enumerate(result):
-        command = f"SELECT * FROM Participants WHERE ParticipantNumber = {i[1]}"
+        command = f"SELECT * FROM Participants WHERE Id = {i[1]}"
         cur.execute(command)
         user = cur.fetchone()
         birth_date = user[5].split("-")

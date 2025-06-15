@@ -148,7 +148,7 @@ class Viewer(wx.Panel):
         
         self.grid_sizer_1 = wx.FlexGridSizer(10, 1, 0, 0)
         
-        self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=[u"2 категория", u"3 категория", u"4 категория", u"5 категория", u"6 категория", u"7 категория", u"8 категория", u"9 категория", u"10 категория", u"11 категория", u"12 категория", u"13 категория", u"14 категория", u"15 категория", u"16 категория", u"17 категория", u"18 категория"])
+        self.choice_1 = wx.Choice(self, wx.ID_ANY, choices=[u"2 ступень", u"3 ступень", u"4 ступень", u"5 ступень", u"6 ступень", u"7 ступень", u"8 ступень", u"9 ступень", u"10 ступень", u"11 ступень", u"12 ступень", u"13 ступень", u"14 ступень", u"15 ступень", u"16 ступень", u"17 ступень", u"18 ступень"])
         self.choice_1.SetSelection(0)
         self.grid_sizer_1.Add(self.choice_1, 0, 0, 0)
 
@@ -462,7 +462,7 @@ class Viewer(wx.Panel):
             # temp_file.close()
 
             # Уведомляем пользователя
-            wx.MessageBox("Данные скопированы в буфер обмена!", "Успех", wx.OK | wx.ICON_INFORMATION)  
+            wx.MessageBox("Протокол сохранен в фаил \"Итоговый протокол\"!", "Успех", wx.OK | wx.ICON_INFORMATION)
         except:
             wx.MessageBox("Файл уже открыт, закройте его", "Ошибка", wx.OK | wx.ICON_ERROR)  
                 
@@ -491,7 +491,7 @@ class Viewer(wx.Panel):
         
         # Для запроса в базу
         category = self.choice_1.GetSelection()+2
-        sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())
+        sex = self.radio_box_1.GetString(self.radio_box_1.GetSelection())
         self.out_objects.clear()
         # Пример формата получаемых данных
         for i in outputAllGradeResults(category, sex):
