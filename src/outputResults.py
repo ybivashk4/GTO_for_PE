@@ -65,4 +65,16 @@ def outputTeamsResults():
         teams_results.sort(reverse=True, key=lambda x: x[1])
     for i in range(len(teams_results)):
         teams_results[i].insert(0, i+1)
+    cur.close()
+    con.close()
     return teams_results
+
+def outputParticipants():
+    con = connect('../GTO.db')
+    cur = con.cursor()
+    command = f"SELECT * FROM Participants"
+    cur.execute(command)
+    users = cur.fetchall()
+    cur.close()
+    con.close()
+    return users

@@ -10,9 +10,12 @@ def getCompetitionNames(Grade, Sex):
     command = f"PRAGMA table_info({table_name})"
     cur.execute(command)
     info = cur.fetchall()
-    column_names = []
+    column_names = {}
     for i in range(1, len(info)):
-        column_names.append(info[i][1])
+        command = f"SELECT \"{info[i][1]}\" FROM {table_name} WHERE Id = 100"
+        cur.execute(command)
+        format = cur.fetchone()
+        column_names.update({info[i][1]: format[0]})
     cur.close()
     con.close()
     return column_names
@@ -24,4 +27,6 @@ def getCompetitionNamesNumber(Number):
     cur.execute(command)
     user = cur.fetchone()
     if user:
+        cur.close()
+        con.close()
         return getCompetitionNames(user[0], user[1])
