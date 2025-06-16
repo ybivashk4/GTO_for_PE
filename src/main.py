@@ -10,6 +10,7 @@ from viewver import Viewer
 from inputer import Inputer
 from deleter import Deleter
 from team_viewver import Team_viewer
+from all_particepants_viewver import Participants_viewver
 # begin wxGlade: dependencies
 # end wxGlade
 
@@ -38,7 +39,9 @@ class MainFrame(wx.Frame):
         self.notebook_1.AddPage(Viewer(self.notebook_1), u"Личный зачет")
 
         self.notebook_1.AddPage(Team_viewer(self.notebook_1), u"Командный зачет")
-
+        
+        self.notebook_1.AddPage(Participants_viewver(self.notebook_1), u"Участники")
+        
         self.notebook_1.AddPage(Inputer(self.notebook_1), u"Ввод")
 
         self.notebook_1.AddPage(Registration(self.notebook_1), u"Регистрация")
