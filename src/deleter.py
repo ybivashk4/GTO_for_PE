@@ -117,10 +117,10 @@ class Deleter(wx.Panel):
         except:
             wx.MessageBox("Введите численное значение в поле Номер участника", "Ошибка", wx.ICON_ERROR)
             return
-        if (getCompetitionNamesNumber(self.number) == None):
+        if (list(getCompetitionNamesNumber(self.number).keys()) == None):
             wx.MessageBox("Нет такого участника", "Информация", wx.ICON_INFORMATION)
             return
-        self.choice_4.Set(getCompetitionNamesNumber(self.number))
+        self.choice_4.Set(list(getCompetitionNamesNumber(self.number).keys()))
         self.choice_4.SetSelection(0)
         
 
@@ -132,7 +132,7 @@ class Deleter(wx.Panel):
         except:
             wx.MessageBox("Введите численное значение в поле Номер участника", "Ошибка", wx.ICON_ERROR)
             return
-        if (getCompetitionNamesNumber(self.number) == None):
+        if (list(getCompetitionNamesNumber(self.number).keys()) == None):
             wx.MessageBox("Нет такого участника", "Информация", wx.ICON_INFORMATION)
             return
         removeParticipant(self.number)

@@ -156,7 +156,7 @@ class Viewer(wx.Panel):
         self.radio_box_1.SetSelection(0)
         self.grid_sizer_1.Add(self.radio_box_1, 0, 0, 0)
         
-        self.normatives = getCompetitionNames(2, "Мужской")
+        self.normatives = list(getCompetitionNames(2, "Мужской").keys())
         self.check_list_box_1 = wx.CheckListBox(self, wx.ID_ANY, choices=self.normatives)
         self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
         self.grid_sizer_1.Add(self.check_list_box_1, 0, 0, 0)
@@ -543,7 +543,7 @@ class Viewer(wx.Panel):
     def update_checkListBox(self):
         category = self.choice_1.GetSelection()+2
         sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())
-        self.normatives = getCompetitionNames(category, sex)
+        self.normatives = list(getCompetitionNames(category, sex).keys())
         self.check_list_box_1.SetItems(self.normatives)
         self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
         self.check_box_1.SetValue(True)
@@ -564,7 +564,7 @@ class Viewer(wx.Panel):
     def on_off_all(self, event):
         category = self.choice_1.GetSelection()+2
         sex =  self.radio_box_1.GetString(self.radio_box_1.GetSelection())        
-        self.normatives = getCompetitionNames(category, sex)
+        self.normatives = list(getCompetitionNames(category, sex).keys())
         if self.check_box_1.GetValue():
             self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
         else:
