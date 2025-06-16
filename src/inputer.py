@@ -94,9 +94,11 @@ class Inputer(wx.Panel):
         self.button_5.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_5.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         grid_sizer_7.Add(self.button_5, 1, wx.ALIGN_CENTER | wx.ALL, 5)
+        
         self.button_3.Bind(wx.EVT_BUTTON, self.search_button)
         self.button_5.Bind(wx.EVT_BUTTON, self.input_button)
-
+        self.choice_4.Bind(wx.EVT_CHOICE, self.set_format)
+        
         self.SetSizer(grid_sizer_1)
 
         self.Layout()
@@ -108,10 +110,11 @@ class Inputer(wx.Panel):
         except:
             wx.MessageBox("Введите численное значение в поле Номер участника", "Ошибка", wx.ICON_ERROR)
             return
-        if (getCompetitionNamesNumber(self.number) == None):
+        if (list(getCompetitionNamesNumber(self.number).keys()) == None):
             wx.MessageBox("Нет такого участника", "Информация", wx.ICON_INFORMATION)
             return
-        self.choice_4.Set(getCompetitionNamesNumber(self.number))
+        self.choice_4.Set(list(getCompetitionNamesNumber(self.number).keys()))
+        self.text_ctrl_2.SetValue(getCompetitionNamesNumber(self.number)[list(getCompetitionNamesNumber(self.number).keys())[0]])
         self.choice_4.SetSelection(0)
     def input_button(self, event):
         if (self.choice_4.GetSelection() == -1):
@@ -123,5 +126,5 @@ class Inputer(wx.Panel):
         self.text_ctrl_1.SetValue("")
         self.text_ctrl_2.SetValue("")
         self.choice_4.Set([])
-        
-
+    def set_format(self, event):
+        self.text_ctrl_2.SetValue(getCompetitionNamesNumber(self.number)[self.choice_4.GetStringSelection()])
