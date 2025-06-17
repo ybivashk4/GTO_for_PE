@@ -72,9 +72,13 @@ def outputTeamsResults():
 def outputParticipants():
     con = connect('../GTO.db')
     cur = con.cursor()
-    command = f"SELECT * FROM Participants"
+    command = f"SELECT * FROM Participants ORDER BY Surname, Name, Patronymic"
     cur.execute(command)
     users = cur.fetchall()
+    for ind, i in enumerate(users):
+        users[ind] = list(users[ind])
+        users[ind][0] = ind+1
     cur.close()
     con.close()
     return users
+
