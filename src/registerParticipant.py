@@ -1,11 +1,15 @@
 from sqlite3 import *
 from datetime import datetime
+# Функции при вызове передается ФИО, пол, дата рождения, номер и команда участника, функция на основе этих данных высчитывает возрастную
+# ступень участника и добавляет его в БД
 def register(Surname, Name, Patronymic, Sex, BirthDate, ParticipantNumber, Team):
     con = connect('../GTO.db')
     cur = con.cursor()
+    # Высчитывание возраста участника на основе полученной строки с датой рождения (на основе даты на компьютере)
     year, month, day = map(int, BirthDate.split("-"))
     today = datetime.today()
     age = today.year - year - ((today.month, today.day) < (month, day))
+    # Определение возрастной ступени ГТО участника на основе его возраста
     if 8 <= age <= 9:
         grade = 2
     elif 10 <= age <= 11:
@@ -40,6 +44,7 @@ def register(Surname, Name, Patronymic, Sex, BirthDate, ParticipantNumber, Team)
         grade = 17
     elif 70 <= age:
         grade = 18
+    # Команда на добавление нового участника в БД
     command = f"INSERT INTO Participants VALUES ((SELECT (COUNT(*)+1) from Participants), '{Surname}', '{Name}', '{Patronymic}', '{Sex}', '{BirthDate}', {str(ParticipantNumber)}, '{Team}', {str(grade)})"
     cur.execute(command)
     con.commit()
@@ -47,7 +52,9 @@ def register(Surname, Name, Patronymic, Sex, BirthDate, ParticipantNumber, Team)
         chosen_sex = "Male"
     else:
         chosen_sex = "Female"
+    # Формирование названия таблицы с результатами в которую будет добавлена запись с новым участником
     table_name = f"Grade{str(grade)}{str(chosen_sex)}"
+    # Команда на добавление новой записи с результатами участника (изначально пустая)
     command = f"INSERT INTO {table_name} (Id, ParticipantId) VALUES ((SELECT (COUNT(*)+1) from {table_name} ), (SELECT MAX(Id) from Participants))"
     cur.execute(command)
     con.commit()
