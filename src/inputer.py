@@ -68,7 +68,7 @@ class Inputer(wx.Panel):
         grid_sizer_1.Add(grid_sizer_3, 1, wx.LEFT | wx.RIGHT, 30)
 
 
-        grid_sizer_4 = wx.FlexGridSizer(4, 1, 10, 0)
+        grid_sizer_4 = wx.FlexGridSizer(5, 1, 10, 0)
         grid_sizer_1.Add(grid_sizer_4, 1, wx.LEFT | wx.RIGHT, 30)
 
         label_3 = wx.StaticText(self, wx.ID_ANY, u"Соревнования")
@@ -88,6 +88,12 @@ class Inputer(wx.Panel):
         self.text_ctrl_2.SetMinSize((300, 33))
         self.text_ctrl_2.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DHIGHLIGHT))
         grid_sizer_7.Add(self.text_ctrl_2, 0, wx.ALIGN_CENTER | wx.BOTTOM | wx.RIGHT | wx.TOP, 5)
+
+        self.text_ctrl_3 = wx.TextCtrl(self, wx.ID_ANY, "", style=wx.TE_READONLY | wx.NO_BORDER)
+        self.text_ctrl_3.SetMinSize((300, 33))
+        self.text_ctrl_3.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_3DHIGHLIGHT))
+        grid_sizer_4.Add(self.text_ctrl_3, 0, wx.ALIGN_CENTER | wx.BOTTOM | wx.RIGHT | wx.TOP, 5)
+
 
         self.button_5 = wx.Button(self, wx.ID_ANY, u"Внести")
         self.button_5.SetMinSize((145, 50))
@@ -114,7 +120,7 @@ class Inputer(wx.Panel):
             wx.MessageBox("Нет такого участника", "Информация", wx.ICON_INFORMATION)
             return
         self.choice_4.Set(list(getCompetitionNamesNumber(self.number).keys()))
-        self.text_ctrl_2.SetValue(getCompetitionNamesNumber(self.number)[list(getCompetitionNamesNumber(self.number).keys())[0]])
+        self.text_ctrl_3.SetLabelText(f"Пример ввода: {getCompetitionNamesNumber(self.number)[list(getCompetitionNamesNumber(self.number).keys())[0]]}")
         self.choice_4.SetSelection(0)
     def input_button(self, event):
         if (self.choice_4.GetSelection() == -1):
@@ -127,4 +133,4 @@ class Inputer(wx.Panel):
         self.text_ctrl_2.SetValue("")
         self.choice_4.Set([])
     def set_format(self, event):
-        self.text_ctrl_2.SetValue(getCompetitionNamesNumber(self.number)[self.choice_4.GetStringSelection()])
+        self.text_ctrl_3.SetLabelText("Привер ввода: " + getCompetitionNamesNumber(self.number)[self.choice_4.GetStringSelection()])

@@ -36,15 +36,15 @@ class MainFrame(wx.Frame):
         self.notebook_1 = wx.Notebook(self, wx.ID_ANY, style= wx.NB_TOP)
         grid_sizer_1.Add(self.notebook_1, 1, wx.EXPAND, 0)
         
-        self.notebook_1.AddPage(Viewer(self.notebook_1), u"Личный зачет")
-
-        self.notebook_1.AddPage(Team_viewer(self.notebook_1), u"Командный зачет")
+        self.notebook_1.AddPage(Registration(self.notebook_1), u"Регистрация")
         
         self.notebook_1.AddPage(Participants_viewver(self.notebook_1), u"Участники")
         
         self.notebook_1.AddPage(Inputer(self.notebook_1), u"Ввод")
+        
+        self.notebook_1.AddPage(Viewer(self.notebook_1), u"Личный зачет")
 
-        self.notebook_1.AddPage(Registration(self.notebook_1), u"Регистрация")
+        self.notebook_1.AddPage(Team_viewer(self.notebook_1), u"Командный зачет")
 
         self.notebook_1.AddPage(Deleter(self.notebook_1), u"Удаление")
 

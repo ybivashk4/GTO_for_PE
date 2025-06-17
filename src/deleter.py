@@ -98,9 +98,10 @@ class Deleter(wx.Panel):
         grid_sizer_1.Add(label_6, 1, wx.ALIGN_CENTER)        
                 
         self.button_1 = wx.Button(self, wx.ID_ANY, "Удалить все записи")
-        self.button_1.SetBackgroundColour(wx.RED)
-        self.button_1.SetForegroundColour(wx.WHITE)
-        grid_sizer_1.Add(self.button_1)
+        self.button_1.SetMinSize((250, 50))
+        self.button_1.SetBackgroundColour(wx.Colour(204, 50, 50))
+        self.button_1.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
+        grid_sizer_1.Add(self.button_1, 1, wx.ALIGN_CENTER | wx.ALL, 5)
         self.button_1.Bind(wx.EVT_BUTTON, self.del_all )
         self.button_2.Bind(wx.EVT_BUTTON, self.delete_button_participant)
         self.button_3.Bind(wx.EVT_BUTTON, self.search_button_1)

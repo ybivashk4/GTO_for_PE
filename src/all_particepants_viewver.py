@@ -27,15 +27,19 @@ class Participants_viewver(wx.Panel):
         self.list_ctrl_1.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.grid_sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
         
-        self.button_1.Bind(wx.EVT_BUTTON, self.update_data)
+        self.button_1.Bind(wx.EVT_BUTTON, self.update_data_api)
         self.SetSizer(self.grid_sizer_1)
-
+        self.update_data()
+        
         self.Layout()
         # end wxGlade
-    def update_data(self, event):
+    def update_data_api(self, event):
+        self.update_data()
+        
+    def update_data(self):
         self.list_ctrl_1.DeleteAllColumns()
         self.list_ctrl_1.DeleteAllItems()
-        self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
+        self.list_ctrl_1.AppendColumn("№ п/п", format=wx.LIST_FORMAT_LEFT, width=100)
         self.list_ctrl_1.AppendColumn("Фамилия", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Имя", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Отчество", format=wx.LIST_FORMAT_LEFT, width=200)
@@ -43,6 +47,6 @@ class Participants_viewver(wx.Panel):
         self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Нагруд. номер", format=wx.LIST_FORMAT_LEFT, width=200)
         self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
-        self.list_ctrl_1.AppendColumn("Категория", format=wx.LIST_FORMAT_LEFT, width=200)
+        self.list_ctrl_1.AppendColumn("Ступень", format=wx.LIST_FORMAT_LEFT, width=200)
         for i in outputParticipants():
             self.list_ctrl_1.Append(i)

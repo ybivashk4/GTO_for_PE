@@ -177,7 +177,7 @@ class Viewer(wx.Panel):
         self.button_4.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_4, 0, 0, 0)
         
-        self.button_3 = wx.Button(self, wx.ID_ANY, "Посмотреть категорию")
+        self.button_3 = wx.Button(self, wx.ID_ANY, "Посмотреть ступень")
         self.button_3.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_3.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.button_3.SetMinSize((350, 25))
@@ -215,6 +215,11 @@ class Viewer(wx.Panel):
         self.Layout()
         # end wxGlade
     def builder_protocol(self):
+        if (len(self.out_categories) == 0):
+            wx.MessageBox("Нет данных по данной ступени", "Сообщение", wx.OK | wx.ICON_INFORMATION)
+            self.list_ctrl_1.DeleteAllColumns()
+            self.list_ctrl_1.DeleteAllItems()
+            return
         try:
             self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
             self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
@@ -262,10 +267,11 @@ class Viewer(wx.Panel):
                     out.append(str(out_category.get_info()[i].get_sum()))
 
                     self.list_ctrl_1.Append(out)
+                    
         except:
-            wx.MessageBox("Нет данных по данной ступени", "Сообщение", wx.OK | wx.ICON_INFORMATION)
-            # self.list_ctrl_1.DeleteAllColumns()
-            # self.list_ctrl_1.DeleteAllItems()
+            wx.MessageBox("Сбой программы", "Ошибка", wx.OK | wx.ICON_ERROR)
+            self.list_ctrl_1.DeleteAllColumns()
+            self.list_ctrl_1.DeleteAllItems()
     def builder(self):
         "Поставить трай эксепт в случае отсутствия записи в категории"
         try:
@@ -495,9 +501,14 @@ class Viewer(wx.Panel):
 
             # Уведомляем пользователя
             wx.MessageBox("Протокол сохранен в фаил \"Итоговый протокол\"!", "Успех", wx.OK | wx.ICON_INFORMATION)
-        except:
+        except PermissionError:
             wx.MessageBox("Файл уже открыт, закройте его", "Ошибка", wx.OK | wx.ICON_ERROR)  
-                
+
+        except:
+            wx.MessageBox("В протоколе нет записей, добавьте хотябы одну", "Ошибка", wx.OK | wx.ICON_ERROR)  
+            self.list_ctrl_1.DeleteAllColumns()
+            self.list_ctrl_1.DeleteAllItems()
+
     def get_data_protocol(self, event):
         try:
             self.create_out_object()
@@ -513,11 +524,11 @@ class Viewer(wx.Panel):
         except:
             wx.MessageBox("Произошла ошибка", "Неизвестная ошибка", wx.OK | wx.ICON_ERROR)
             
+            
     def create_out_object(self):
         #Удаление старых записей
         self.list_ctrl_1.DeleteAllColumns()
         self.list_ctrl_1.DeleteAllItems()
-        
         # Удаление соревнований, которые не выбраны в программе
         white_list = self.check_list_box_1.GetCheckedStrings()
         
@@ -537,8 +548,7 @@ class Viewer(wx.Panel):
                     
             self.out_objects.append(Out_object(i[0], i[1],i[2], i[3], i[4], i[5], i[6], filtred_norrmatives, i[8]))
         temp_out_object = [i for i in self.out_objects]
-        self.out_categories.append(Out_category(temp_out_object, category, sex))
-        
+        if (len(temp_out_object) > 0): self.out_categories.append(Out_category(temp_out_object, category, sex))
     
     def update_checkListBox(self):
         category = self.choice_1.GetSelection()+2
