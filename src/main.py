@@ -59,7 +59,7 @@ class MainFrame(wx.Frame):
 class MyApp(wx.App):
     def OnInit(self):
         self.frame = MainFrame(None, wx.ID_ANY, "")
-        self.frame.SetIcon(wx.Icon("GTO_ICON.png"))
+        self.frame.SetIcon(wx.Icon("GTO.png"))
         self.SetTopWindow(self.frame)
         self.frame.Show()
         return True

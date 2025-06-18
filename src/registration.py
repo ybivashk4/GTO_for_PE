@@ -236,7 +236,7 @@ class Registration(wx.Panel):
 
         if user:
             reg_api.register(user.get_surname(), user.get_name(), user.get_third_name(), user.get_sex(), user.get_bortrh(), user.get_num(), user.get_team())
-            wx.MessageBox(f"Пользователь создан: {user}", "Успех", wx.ICON_INFORMATION)
+            wx.MessageBox(f"Участник добавлен: {user}", "Успех", wx.ICON_INFORMATION)
             self.text_ctrl_1.SetValue("")
             self.text_ctrl_2.SetValue("")
             self.text_ctrl_3.SetValue("")
