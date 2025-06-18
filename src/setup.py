@@ -5,6 +5,6 @@ sys.argv.append('py2exe')
 
 setup(
     options = {'py2exe': {'optimize': 2}},
-    windows = [{'script': "main.py"}],
+    windows = [{'script': "GTO_helper.py"}],
     zipfile = "shared.lib",
 )
