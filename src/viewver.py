@@ -221,52 +221,55 @@ class Viewer(wx.Panel):
             self.list_ctrl_1.DeleteAllItems()
             return
         try:
-            self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
-            self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
-            self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
-            self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
-            self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
-            # Добавить вывод всех нормативов
-            noramtives_headers = []
+            self.list_ctrl_1.AppendColumn("Ступень в протоколе", format=wx.LIST_FORMAT_LEFT, width=500)
             for i in self.out_categories:
-                black_list = []
-                for j in range(0, len(i.get_info()[0].get_normatives()), 3):
-                    if (i.get_normatives()[j] not in black_list):
-                        noramtives_headers.append(i.get_info()[0].get_normatives()[j] + " Результат")
-                        noramtives_headers.append(i.get_info()[0].get_normatives()[j] + " Баллы")
-                        black_list.append(i.get_info()[0].get_normatives()[j])
+                self.list_ctrl_1.Append(str(i.get_category()))
+            # self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
+            # self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
+            # self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
+            # self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
+            # self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
+            # # Добавить вывод всех нормативов
+            # noramtives_headers = []
+            # for i in self.out_categories:
+            #     black_list = []
+            #     for j in range(0, len(i.get_info()[0].get_normatives()), 3):
+            #         if (i.get_normatives()[j] not in black_list):
+            #             noramtives_headers.append(i.get_info()[0].get_normatives()[j] + " Результат")
+            #             noramtives_headers.append(i.get_info()[0].get_normatives()[j] + " Баллы")
+            #             black_list.append(i.get_info()[0].get_normatives()[j])
 
-            for i in noramtives_headers:
-                self.list_ctrl_1.AppendColumn(i, format=wx.LIST_FORMAT_LEFT, width=200)
-            self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
-            for out_category in self.out_categories:
-                for i in range(len(out_category.get_info())):
-                    out = []
-                    out.append(str(out_category.get_info()[i].get_place()))
-                    out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
-                    out.append(out_category.get_info()[i].get_date())
-                    out.append(out_category.get_info()[i].get_number())
-                    out.append(out_category.get_info()[i].get_team())
-                    count_noramtives = 0
-                    is_find_normative = False
-                    for j in range(0, len(out_category.get_info()[i].get_normatives())):
-                        if (j % 3 == 0):
-                            continue
-                        while (not (is_find_normative) and j % 3 == 1 and out_category.get_info()[i].get_normatives()[j-1] != noramtives_headers[count_noramtives].replace(" Результат", "")):
-                            out.append("Не участвовал")
-                            out.append("0")
-                            count_noramtives += 2
-                            is_find_normative = True
+            # for i in noramtives_headers:
+            #     self.list_ctrl_1.AppendColumn(i, format=wx.LIST_FORMAT_LEFT, width=200)
+            # self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
+            # for out_category in self.out_categories:
+            #     for i in range(len(out_category.get_info())):
+            #         out = []
+            #         out.append(str(out_category.get_info()[i].get_place()))
+            #         out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
+            #         out.append(out_category.get_info()[i].get_date())
+            #         out.append(out_category.get_info()[i].get_number())
+            #         out.append(out_category.get_info()[i].get_team())
+            #         count_noramtives = 0
+            #         is_find_normative = False
+            #         for j in range(0, len(out_category.get_info()[i].get_normatives())):
+            #             if (j % 3 == 0):
+            #                 continue
+            #             while (not (is_find_normative) and j % 3 == 1 and out_category.get_info()[i].get_normatives()[j-1] != noramtives_headers[count_noramtives].replace(" Результат", "")):
+            #                 out.append("Не участвовал")
+            #                 out.append("0")
+            #                 count_noramtives += 2
+            #                 is_find_normative = True
                             
-                        out.append(str(out_category.get_info()[i].get_normatives()[j]))
-                        count_noramtives+=1
-                    while (count_noramtives < len(noramtives_headers)):
-                        out.append("Не участвовал")
-                        out.append("0")
-                        count_noramtives += 2
-                    out.append(str(out_category.get_info()[i].get_sum()))
+            #             out.append(str(out_category.get_info()[i].get_normatives()[j]))
+            #             count_noramtives+=1
+            #         while (count_noramtives < len(noramtives_headers)):
+            #             out.append("Не участвовал")
+            #             out.append("0")
+            #             count_noramtives += 2
+            #         out.append(str(out_category.get_info()[i].get_sum()))
 
-                    self.list_ctrl_1.Append(out)
+            #         self.list_ctrl_1.Append(out)
                     
         except:
             wx.MessageBox("Сбой программы", "Ошибка", wx.OK | wx.ICON_ERROR)
@@ -564,6 +567,7 @@ class Viewer(wx.Panel):
     def delete_last_record(self, event):
         try:
             self.out_categories.pop()
+            wx.MessageBox("Удаление успешно", "Успех", wx.ICON_INFORMATION | wx.OK)
             # Удаление старых записей
             self.list_ctrl_1.DeleteAllColumns()
             self.list_ctrl_1.DeleteAllItems()
@@ -583,21 +587,7 @@ class Viewer(wx.Panel):
         row_count = self.list_ctrl_1.GetItemCount()
         col_count = self.list_ctrl_1.GetColumnCount()
         all_items = []
-        
-        for row in range(row_count):
-            row_data = []
-            for col in range(col_count):
-                row_data.append(self.list_ctrl_1.GetItemText(row, col))
-            all_items.append("\t".join(row_data))
-
         # Копируем в буфер обмена
-
-        if all_items:
-            clipboard_data = wx.TextDataObject()
-            clipboard_data.SetText("\n".join(all_items))
-            if wx.TheClipboard.Open():
-                wx.TheClipboard.SetData(clipboard_data)
-                wx.TheClipboard.Close()
         for row in range(row_count):
             row_data = []
             for col in range(col_count):
