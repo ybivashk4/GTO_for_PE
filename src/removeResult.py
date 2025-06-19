@@ -1,7 +1,7 @@
 from sqlite3 import *
 # Функция при вызове получает номер участника и название соревнования результат которого нужно удалить
 def removeResult(Number, Competition):
-    con = connect('../GTO.db')
+    con = connect('GTO.db')
     cur = con.cursor()
     # Команда для получения из БД id, возрастную ступень и пол участника номер которого был передан в функцию
     command = f"SELECT Id, GTOGrade, Sex FROM Participants WHERE ParticipantNumber = {Number}"

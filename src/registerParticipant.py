@@ -3,7 +3,7 @@ from datetime import datetime
 # Функции при вызове передается ФИО, пол, дата рождения, номер и команда участника, функция на основе этих данных высчитывает возрастную
 # ступень участника и добавляет его в БД
 def register(Surname, Name, Patronymic, Sex, BirthDate, ParticipantNumber, Team):
-    con = connect('../GTO.db')
+    con = connect('GTO.db')
     cur = con.cursor()
     # Высчитывание возраста участника на основе полученной строки с датой рождения (на основе даты на компьютере)
     year, month, day = map(int, BirthDate.split("-"))

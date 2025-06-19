@@ -1,7 +1,7 @@
 from getCompetitionNames import *
 # Функции при вызове передается возрастная ступень и пол участника на основе которых функция возвращает список со всеми результатами в ступени
 def outputAllGradeResults(Grade, Sex):
-    con = connect('../GTO.db')
+    con = connect('GTO.db')
     cur = con.cursor()
     if Sex == "Мужской":
         chosen_sex = "Male"
@@ -41,7 +41,7 @@ def outputAllGradeResults(Grade, Sex):
 
 # Функция при вызове считает сумму баллов всех участников каждой зарегистрированной команды
 def outputTeamsResults():
-    con = connect('../GTO.db')
+    con = connect('GTO.db')
     cur = con.cursor()
     # Команда для получения всех команд участников без повторений
     command = f"SELECT DISTINCT Team FROM Participants"
@@ -80,9 +80,10 @@ def outputTeamsResults():
     con.close()
     return teams_results
 
+
 # Функция при вызове возвращает список всех участников соревнования в алфавитном порядке
 def outputParticipants():
-    con = connect('../GTO.db')
+    con = connect('GTO.db')
     cur = con.cursor()
     # Команда для получения списка всех участников соревнований в алфавитном порядке
     command = f"SELECT * FROM Participants ORDER BY Surname, Name, Patronymic"

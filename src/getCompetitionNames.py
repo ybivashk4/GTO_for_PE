@@ -1,7 +1,7 @@
 from sqlite3 import *
 # Функции при вызове передаются ступень и пол и на основе этих данных она возвращает названия всех соревнований в данной возрастной ступени
 def getCompetitionNames(Grade, Sex):
-    con = connect('../GTO.db')
+    con = connect('GTO.db')
     cur = con.cursor()
     if Sex == "Мужской":
         sex_chosen = "Male"
@@ -30,7 +30,7 @@ def getCompetitionNames(Grade, Sex):
 # Функции при вызове передается номер участника (не id) и на основе полученного числа она возвращает названия
 # всех соревнований ступени в которой находится участник
 def getCompetitionNamesNumber(Number):
-    con = connect('../GTO.db')
+    con = connect('GTO.db')
     cur = con.cursor()
     # Команда для получения возрастной ступени и пола участника по его номеру
     command = f"SELECT GTOGrade, Sex FROM Participants WHERE ParticipantNumber = {Number}"

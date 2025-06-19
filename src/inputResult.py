@@ -2,7 +2,7 @@ from sqlite3 import *
 from datetime import datetime
 # Функции при вызове передается номер участника, название соревнования и результат
 def inputResult(Number, Competition, Result):
-    con = connect('../GTO.db')
+    con = connect('GTO.db')
     cur = con.cursor()
     # Команда для выбора участника из БД по его номеру
     command = f"SELECT * FROM Participants WHERE ParticipantNumber = {Number}"
