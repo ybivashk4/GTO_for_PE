@@ -28,7 +28,7 @@ class Participants_viewver(wx.Panel):
         
         # Поле для просмотра участников
         self.list_ctrl_1 = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_HRULES | wx.LC_REPORT | wx.LC_VRULES)
-        self.list_ctrl_1.SetMinSize(wx.Size(10000, 350))
+        self.list_ctrl_1.SetMinSize(wx.Size(10000, 775))
         self.list_ctrl_1.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         self.list_ctrl_1.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.grid_sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
