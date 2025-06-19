@@ -45,7 +45,7 @@ def register(Surname, Name, Patronymic, Sex, BirthDate, ParticipantNumber, Team)
     elif 70 <= age:
         grade = 18
     # Команда на добавление нового участника в БД
-    command = f"INSERT INTO Participants VALUES ((SELECT (COUNT(*)+1) from Participants), '{Surname}', '{Name}', '{Patronymic}', '{Sex}', '{BirthDate}', {str(ParticipantNumber)}, '{Team}', {str(grade)})"
+    command = f"INSERT INTO Participants VALUES ((SELECT (MAX(Id)+1) from Participants), '{Surname}', '{Name}', '{Patronymic}', '{Sex}', '{BirthDate}', {str(ParticipantNumber)}, '{Team}', {str(grade)})"
     cur.execute(command)
     con.commit()
     if Sex == "Мужской":
@@ -55,7 +55,7 @@ def register(Surname, Name, Patronymic, Sex, BirthDate, ParticipantNumber, Team)
     # Формирование названия таблицы с результатами в которую будет добавлена запись с новым участником
     table_name = f"Grade{str(grade)}{str(chosen_sex)}"
     # Команда на добавление новой записи с результатами участника (изначально пустая)
-    command = f"INSERT INTO {table_name} (Id, ParticipantId) VALUES ((SELECT (COUNT(*)+1) from {table_name} ), (SELECT MAX(Id) from Participants))"
+    command = f"INSERT INTO {table_name} (Id, ParticipantId) VALUES ((SELECT (MAX(Id)+1) from {table_name} ), (SELECT MAX(Id) from Participants))"
     cur.execute(command)
     con.commit()
     cur.close()
