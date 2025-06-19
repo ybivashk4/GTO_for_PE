@@ -39,7 +39,7 @@ class Deleter(wx.Panel):
         grid_sizer_1 = wx.FlexGridSizer(8, 1, 30, 0)
         
         # Создание надписи Удаление одной записи
-        label_4 = wx.StaticText(self, wx.ID_ANY, u"Удаление одной записи", style=wx.ALIGN_CENTER_HORIZONTAL)
+        label_4 = wx.StaticText(self, wx.ID_ANY, u"Удаление результата", style=wx.ALIGN_CENTER_HORIZONTAL)
         label_4.SetFont(wx.Font(20, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
         grid_sizer_1.Add(label_4, 1, wx.ALIGN_CENTER)
         
