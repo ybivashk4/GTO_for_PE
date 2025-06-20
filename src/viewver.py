@@ -1,12 +1,10 @@
-import time
-
 import wx
 import openpyxl
 from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from outputResults import outputAllGradeResults, outputTeamsResults
 from getCompetitionNames import getCompetitionNames
 
-
+# Функция для перевода чисел в римскую систему
 def to_roman(number: int) -> str:
     roman_numbers = {'M': 1000, 'CM': 900, 'D': 500, 'CD': 400,
                      'C': 100, 'XC': 90, 'L': 50, 'XL': 40,
@@ -18,7 +16,7 @@ def to_roman(number: int) -> str:
             number -= value
     return roman
 
-
+# Фунция для перевода ступени в возраст
 def category_to_age(category: int) -> str:
     res = ''
     match category:
@@ -58,7 +56,7 @@ def category_to_age(category: int) -> str:
             res = '70+'
     return res
 
-
+# Класс, хранящий в себе данные о выводимом объекте
 class Out_object():
     def __init__(self, place, surname, name, thirdname, date_of_borth: str, number, team, normatives: list,
                  sum) -> None:
@@ -98,13 +96,8 @@ class Out_object():
 
     def get_date(self):
         return self.date
-    # def calculate_sum(self):
-    #     self.sum = 0
-    #     for i in range(2, int(len(self.normatives)), 3):
-    #         self.sum += self.normatives[i]
-    #     return self.sum
 
-
+# Класс, хранящий в себе данные о выводимомой ступени
 class Out_category():
     def __init__(self, out_objects: list, category: int, sex: str) -> None:
         self.out_objects = out_objects
@@ -126,13 +119,11 @@ class Out_category():
     def get_normatives_without_results(self):
         return [self.out_objects[0].get_normatives()[i] for i in range(0, len(self.out_objects[0].get_normatives()), 3)]
 
-
-def get_column_length(out_object: Out_object) -> int:
-    name_len = 3
-    sum_len = 1
-    return int(len(out_object.get_normatives()) / 3 * 2 + 0.1) + 3 + sum_len + name_len
-
-
+"""Класс, отвечающий за страницу просмотра участников
+ОПИСАНИЕ:
+    Класс создаёт все виджеты на странице, отвечает за подтягивание данных с базы данных,
+    Также отвечает за вывод ошибок в случае неправильной работы с приложением
+"""
 class Viewer(wx.Panel):
     def __init__(self, parent):
 
@@ -140,13 +131,17 @@ class Viewer(wx.Panel):
         self.out_objects = []
         self.out_categories = []
 
-        # begin wxGlade: Viewer.__init__
+        # вызов конструктора наследника с указанием того-же родителя, что и у класса Team_viewer
         super(Viewer, self).__init__(parent)
+        
+        # Задание размера и стандартного шрифта
         self.SetSize((600, 800))
         self.SetFont(wx.Font(12, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, "Segoe UI"))
-
+        
+        # Создание разметки верхнего уровня        
         self.grid_sizer_1 = wx.FlexGridSizer(11, 1, 0, 0)
 
+        # Создание объекта дял выбора ступени
         self.choice_1 = wx.Choice(self, wx.ID_ANY,
                                   choices=[u"2 ступень", u"3 ступень", u"4 ступень", u"5 ступень", u"6 ступень",
                                            u"7 ступень", u"8 ступень", u"9 ступень", u"10 ступень", u"11 ступень",
@@ -155,56 +150,68 @@ class Viewer(wx.Panel):
         self.choice_1.SetSelection(0)
         self.grid_sizer_1.Add(self.choice_1, 0, 0, 0)
 
+        # Создание объекта дял выбора пола
         self.radio_box_1 = wx.RadioBox(self, wx.ID_ANY, "", choices=[u"Мужской", u"Женский"], majorDimension=1,
                                        style=wx.RA_SPECIFY_ROWS)
         self.radio_box_1.SetSelection(0)
         self.grid_sizer_1.Add(self.radio_box_1, 0, 0, 0)
-
+        
+        # Создание объекта дял установки начальнх доступных соревнований
         self.normatives = list(getCompetitionNames(2, "Мужской").keys())
+        
+        # Создание кнопок выбора соревнований
         self.check_list_box_1 = wx.CheckListBox(self, wx.ID_ANY, choices=self.normatives)
         self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
         self.grid_sizer_1.Add(self.check_list_box_1, 0, 0, 0)
 
+        # Создание кнопки для выбора/сброса всех соревнований
         self.check_box_1 = wx.CheckBox(self, wx.ID_ANY, 'Включить/выключить всё')
         self.check_box_1.SetValue(True)
         self.grid_sizer_1.Add(self.check_box_1, 0, 0, 0)
 
+        # Добавка кнопки Добавить в протокол
         self.button_2 = wx.Button(self, wx.ID_ANY, "Добавить в протокол")
         self.button_2.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_2.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.button_2.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_2, 0, 0, 0)
 
+        # Создание кнопки Удалить последнюю запись из протокола
         self.button_4 = wx.Button(self, wx.ID_ANY, "Удалить последнюю запись из протокола")
         self.button_4.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_4.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.button_4.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_4, 0, 0, 0)
 
+        # Создание кнопки Посмотреть ступень
         self.button_3 = wx.Button(self, wx.ID_ANY, "Посмотреть ступень")
         self.button_3.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_3.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.button_3.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_3, 0, 0, 0)
 
+        # Создание поля для просмотра полученных данных
         self.list_ctrl_1 = wx.ListCtrl(self, wx.ID_ANY, style=wx.LC_HRULES | wx.LC_REPORT | wx.LC_VRULES)
         self.list_ctrl_1.SetMinSize(wx.Size(10000, 350))
         self.list_ctrl_1.SetFont(wx.Font(12, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, ""))
         self.list_ctrl_1.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
 
         self.grid_sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
+        # Кнопка Сохранить протокол
         self.button_1 = wx.Button(self, wx.ID_ANY, "Сохранить протокол")
         self.button_1.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_1.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.button_1.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_1, 0, 0, 0)
 
+        # кнопка Скопировать данные ступени
         self.button_5 = wx.Button(self, wx.ID_ANY, "Скопировать данные ступени")
         self.button_5.SetBackgroundColour(wx.Colour(204, 50, 50))
         self.button_5.SetForegroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.button_5.SetMinSize((350, 25))
         self.grid_sizer_1.Add(self.button_5, 0, 0, 0)
 
+        # Привязка событий
         self.button_1.Bind(wx.EVT_BUTTON, self.save_as_excel)
         self.button_2.Bind(wx.EVT_BUTTON, self.get_data_protocol)
         self.button_3.Bind(wx.EVT_BUTTON, self.get_data)
@@ -216,8 +223,8 @@ class Viewer(wx.Panel):
         self.SetSizer(self.grid_sizer_1)
 
         self.Layout()
-        # end wxGlade
 
+    # Функция для отображения данных о протоколе
     def builder_protocol(self):
         if (len(self.out_categories) == 0):
             wx.MessageBox("Нет данных по данной ступени", "Сообщение", wx.OK | wx.ICON_INFORMATION)
@@ -229,60 +236,13 @@ class Viewer(wx.Panel):
             self.list_ctrl_1.AppendColumn("Пол", format=wx.LIST_FORMAT_LEFT, width=500)
             for i in self.out_categories:
                 self.list_ctrl_1.Append([str(i.get_category()), str(i.get_sex())])
-            # self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
-            # self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
-            # self.list_ctrl_1.AppendColumn("Дата рождения", format=wx.LIST_FORMAT_LEFT, width=200)
-            # self.list_ctrl_1.AppendColumn("Нагрудн. Номер", format=wx.LIST_FORMAT_LEFT, width=200)
-            # self.list_ctrl_1.AppendColumn("Команда", format=wx.LIST_FORMAT_LEFT, width=200)
-            # # Добавить вывод всех нормативов
-            # noramtives_headers = []
-            # for i in self.out_categories:
-            #     black_list = []
-            #     for j in range(0, len(i.get_info()[0].get_normatives()), 3):
-            #         if (i.get_normatives()[j] not in black_list):
-            #             noramtives_headers.append(i.get_info()[0].get_normatives()[j] + " Результат")
-            #             noramtives_headers.append(i.get_info()[0].get_normatives()[j] + " Баллы")
-            #             black_list.append(i.get_info()[0].get_normatives()[j])
-
-            # for i in noramtives_headers:
-            #     self.list_ctrl_1.AppendColumn(i, format=wx.LIST_FORMAT_LEFT, width=200)
-            # self.list_ctrl_1.AppendColumn("Сумма очков", format=wx.LIST_FORMAT_LEFT, width=100)
-            # for out_category in self.out_categories:
-            #     for i in range(len(out_category.get_info())):
-            #         out = []
-            #         out.append(str(out_category.get_info()[i].get_place()))
-            #         out.append(out_category.get_info()[i].get_surname() + " " + out_category.get_info()[i].get_name() + " " + out_category.get_info()[i].get_thirdname())
-            #         out.append(out_category.get_info()[i].get_date())
-            #         out.append(out_category.get_info()[i].get_number())
-            #         out.append(out_category.get_info()[i].get_team())
-            #         count_noramtives = 0
-            #         is_find_normative = False
-            #         for j in range(0, len(out_category.get_info()[i].get_normatives())):
-            #             if (j % 3 == 0):
-            #                 continue
-            #             while (not (is_find_normative) and j % 3 == 1 and out_category.get_info()[i].get_normatives()[j-1] != noramtives_headers[count_noramtives].replace(" Результат", "")):
-            #                 out.append("Не участвовал")
-            #                 out.append("0")
-            #                 count_noramtives += 2
-            #                 is_find_normative = True
-
-            #             out.append(str(out_category.get_info()[i].get_normatives()[j]))
-            #             count_noramtives+=1
-            #         while (count_noramtives < len(noramtives_headers)):
-            #             out.append("Не участвовал")
-            #             out.append("0")
-            #             count_noramtives += 2
-            #         out.append(str(out_category.get_info()[i].get_sum()))
-
-            #         self.list_ctrl_1.Append(out)
-
         except:
             wx.MessageBox("Сбой программы", "Ошибка", wx.OK | wx.ICON_ERROR)
             self.list_ctrl_1.DeleteAllColumns()
             self.list_ctrl_1.DeleteAllItems()
-
+    
+    # Функция для отображения данных о ступени
     def builder(self):
-        "Поставить трай эксепт в случае отсутствия записи в категории"
         try:
             self.list_ctrl_1.AppendColumn("Место", format=wx.LIST_FORMAT_LEFT, width=100)
             self.list_ctrl_1.AppendColumn("ФИО", format=wx.LIST_FORMAT_LEFT, width=200)
@@ -320,6 +280,7 @@ class Viewer(wx.Panel):
             self.list_ctrl_1.DeleteAllColumns()
             self.list_ctrl_1.DeleteAllItems()
 
+    # Функция для сохранения данных в эксель
     def save_as_excel(self, event):
         try:
             # Создаем временный Excel файл
@@ -414,15 +375,7 @@ class Viewer(wx.Panel):
             ws.merge_cells(start_row=cur_row, start_column=1, end_row=cur_row, end_column=int(col_count / 2))
             ws.merge_cells(start_row=cur_row, start_column=int(col_count) / 2 + 1, end_row=cur_row,
                            end_column=col_count)
-            # Сохраняем файл во временной директории
-            # temp_file = tempfile.NamedTemporaryFile(delete=False, suffix='.xlsx')
-            # wb.save(temp_file.name)
-
-            # Копируем данные в буфер обмена в текстовом формате
-            # output = []
-            # for row in ws.iter_rows(values_only=True):
-            #     output.append('\t'.join(map(str, row)))
-
+           
             # читаемый шрифт
             font_style = Font(name='Times New Roman', size=16, vertAlign='baseline')
             alignment = Alignment(horizontal='center', vertical='center', wrap_text=True)
@@ -477,9 +430,6 @@ class Viewer(wx.Panel):
             ws2.column_dimensions['B'].width = 70
             ws2.column_dimensions['C'].width = 70
 
-            # # Сохранение файла таблицы
-            # pyperclip.copy('\n'.join(output))
-
             headers = ["Место", "Команда", "Сумма очков"]
             ws2.append(headers)
             ws2[f'A{cur_row}'].fill = PatternFill(start_color='FFFF00', end_color='FFFF00', fill_type="solid")
@@ -529,8 +479,6 @@ class Viewer(wx.Panel):
                                      left=Side(border_style='thin', color='000000'),
                                      right=Side(border_style='thin', color='000000'))
             wb.save('../Итоговый протокол.xlsx')
-            # Закрываем временный файл
-            # temp_file.close()
 
             # Уведомляем пользователя
             wx.MessageBox("Протокол сохранен в файл \"Итоговый протокол\", в папке gto_helper!", "Успех", wx.OK | wx.ICON_INFORMATION)
@@ -542,6 +490,7 @@ class Viewer(wx.Panel):
             self.list_ctrl_1.DeleteAllColumns()
             self.list_ctrl_1.DeleteAllItems()
 
+    # Функция обработчик нажатия на кнопку добавить в протокол
     def get_data_protocol(self, event):
         try:
             self.create_out_object()
@@ -550,7 +499,7 @@ class Viewer(wx.Panel):
         except:
             wx.MessageBox("Произошла ошибка", "Неизвестная ошибка", wx.OK | wx.ICON_ERROR)
 
-    # end of class Viewer
+    # Функция обработчик нажатия на кнопку посмотреть ступень
     def get_data(self, event):
         try:
             self.create_out_object()
@@ -558,6 +507,7 @@ class Viewer(wx.Panel):
         except:
             wx.MessageBox("Произошла ошибка", "Неизвестная ошибка", wx.OK | wx.ICON_ERROR)
 
+    # Дробавление в внтуренние данные информации о добавленом объекте
     def create_out_object(self):
         # Удаление старых записей
         self.list_ctrl_1.DeleteAllColumns()
@@ -583,6 +533,7 @@ class Viewer(wx.Panel):
         temp_out_object = [i for i in self.out_objects]
         if (len(temp_out_object) > 0): self.out_categories.append(Out_category(temp_out_object, category, sex))
 
+    #  Функция обновляющая список соревнований
     def update_checkListBox(self):
         category = self.choice_1.GetSelection() + 2
         sex = self.radio_box_1.GetString(self.radio_box_1.GetSelection())
@@ -590,10 +541,11 @@ class Viewer(wx.Panel):
         self.check_list_box_1.SetItems(self.normatives)
         self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
         self.check_box_1.SetValue(True)
-
+    
     def update_checkListBox_API(self, event):
         self.update_checkListBox()
 
+    #  Функция удаляющая последнюю запись из протокола
     def delete_last_record(self, event):
         try:
             self.out_categories.pop()
@@ -605,6 +557,7 @@ class Viewer(wx.Panel):
         except:
             wx.MessageBox("В протоколе нет записей", "Информация", wx.ICON_INFORMATION | wx.OK)
 
+    # Функция выбирающая/сбрасываю0щая выбор с соревнований
     def on_off_all(self, event):
         category = self.choice_1.GetSelection() + 2
         sex = self.radio_box_1.GetString(self.radio_box_1.GetSelection())
@@ -613,7 +566,7 @@ class Viewer(wx.Panel):
             self.check_list_box_1.SetCheckedItems([i for i in range(len(self.normatives))])
         else:
             self.check_list_box_1.SetCheckedItems([])
-
+    # Функция копипрования ступени в буфер обмена
     def copy_to_clipboard(self, event):
         row_count = self.list_ctrl_1.GetItemCount()
         col_count = self.list_ctrl_1.GetColumnCount()
