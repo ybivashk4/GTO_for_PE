@@ -6,23 +6,6 @@ from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
 from outputResults import outputAllGradeResults, outputTeamsResults
 from getCompetitionNames import getCompetitionNames
 
-"""
-    TODO:
-    * Сделать цвет у строчки с категорией+
-    * Сделать Вывод верхней части таблицы+
-    * Сделать Вывод нескольких таблиц+
-    * Сделать Вывод остальных листов+
-    * Добавить рамки в таблицу+
-    * Добавить сообщение об ошибке в случае, если файл открыт+
-    * Поменять скопировать на сохранить файл+
-    * Выбор отображаемых соревнований+
-    * Удаление последней записи в протоколе+
-    * Стиль кнопок+
-    * Заменить на личный зачет+
-    * сделать нормально вкл/выкл всё+
-    * Сбросить чекбокс при переключении пола/категории
-"""
-
 
 def to_roman(number: int) -> str:
     roman_numbers = {'M': 1000, 'CM': 900, 'D': 500, 'CD': 400,
@@ -545,12 +528,12 @@ class Viewer(wx.Panel):
                                      bottom=Side(border_style='thin', color='000000'),
                                      left=Side(border_style='thin', color='000000'),
                                      right=Side(border_style='thin', color='000000'))
-            wb.save('Итоговый протокол.xlsx')
+            wb.save('../Итоговый протокол.xlsx')
             # Закрываем временный файл
             # temp_file.close()
 
             # Уведомляем пользователя
-            wx.MessageBox("Протокол сохранен в фаил \"Итоговый протокол\"!", "Успех", wx.OK | wx.ICON_INFORMATION)
+            wx.MessageBox("Протокол сохранен в файл \"Итоговый протокол\", в папке gto_helper!", "Успех", wx.OK | wx.ICON_INFORMATION)
         except PermissionError:
             wx.MessageBox("Файл уже открыт, закройте его", "Ошибка", wx.OK | wx.ICON_ERROR)
 

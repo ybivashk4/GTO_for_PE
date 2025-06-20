@@ -27,7 +27,7 @@ class Team_viewer(wx.Panel):
         self.list_ctrl_1.SetBackgroundColour(wx.SystemSettings.GetColour(wx.SYS_COLOUR_BTNHIGHLIGHT))
         self.grid_sizer_1.Add(self.list_ctrl_1, 1, wx.EXPAND, 0)
         
-        self.button_1.Bind(wx.EVT_BUTTON, self.update_data)
+        self.button_1.Bind(wx.EVT_BUTTON, self.update_data_api)
         self.SetSizer(self.grid_sizer_1)
         self.update_data()
 
